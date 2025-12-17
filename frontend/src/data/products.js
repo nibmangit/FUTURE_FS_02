@@ -53,85 +53,85 @@ export const MOCK_PRODUCTS = [
       'A high-capacity portable charger with fast charging support to keep your devices powered on the go.',
     imageUrl: 'https://images.pexels.com/photos/9795001/pexels-photo-9795001.jpeg'
   },
-  {
-    id: '7',
-    name: 'Raspberry Pi Starter Kit',
-    category: 'DIY Electronics',
-    price: 79.99,
-    description:
-      'A versatile Raspberry Pi kit perfect for programming, electronics projects, and educational purposes.',
-    imageUrl: 'https://images.pexels.com/photos/163073/raspberry-pi-computer-linux-163073.jpeg'
-  },
-  {
-    id: '8',
-    name: 'High-End Gaming Mouse',
-    category: 'Gaming Gear',
-    price: 69.99,
-    description:
-      'Ergonomic gaming mouse with customizable DPI, RGB lighting, and high precision for competitive gaming.',
-    imageUrl: 'https://images.pexels.com/photos/440320/pexels-photo-440320.jpeg'
-  },
-  {
-    id: '9',
-    name: 'Smart AI Assistant',
-    category: 'AI Devices',
-    price: 199.99,
-    description:
-      'A voice-activated AI assistant that helps manage your home, answer questions, and streamline your daily tasks.',
-    imageUrl: 'https://images.pexels.com/photos/7014951/pexels-photo-7014951.jpeg'
-  },
-  {
-    id: '10',
-    name: 'Smart Health Scale',
-    category: 'Health Tech',
-    price: 49.99,
-    description:
-      'A digital health scale that tracks weight, body composition, and syncs with your smartphone for easy monitoring.',
-    imageUrl: 'https://images.pexels.com/photos/4790255/pexels-photo-4790255.jpeg'
-  },
-  {
-    id: '11',
-    name: 'Action Camera Pro',
-    category: 'Photography Tech',
-    price: 299.99,
-    description:
-      'Compact action camera with 4K recording, waterproof design, and versatile mounting options for adventures.',
-    imageUrl: 'https://images.pexels.com/photos/35147262/pexels-photo-35147262.jpeg'
-  },
-  {
-    id: '12',
-    name: 'Wireless Power Bank',
-    category: 'Mobile Accessories',
-    price: 39.99,
-    description:
-      'Portable wireless power bank with fast charging and compact design for smartphones and small gadgets.',
-    imageUrl: 'https://images.pexels.com/photos/3587478/pexels-photo-3587478.jpeg'
-  },
-  {
-    id: '13',
-    name: 'Gaming Controller Elite',
-    category: 'Gaming Gear',
-    price: 79.99,
-    description:
-      'High-performance gaming controller compatible with multiple platforms, featuring ergonomic design and responsive buttons.',
-    imageUrl: 'https://images.pexels.com/photos/1298601/pexels-photo-1298601.jpeg'
-  },
-  {
-    id: '14',
-    name: 'Smart Home Speaker',
-    category: 'Smart Home',
-    price: 99.99,
-    description:
-      'Voice-controlled smart speaker with rich sound, smart home integration, and hands-free operation.',
-    imageUrl: 'https://images.pexels.com/photos/2823936/pexels-photo-2823936.jpeg'
-  },
-  {
-    id: '15',
-    name: 'Wearable Fitness Tracker',
-    category: 'Health Tech',
-    price: 89.99,
-    description:
-      'A sleek wearable device that monitors heart rate, steps, and sleep patterns for a healthier lifestyle.',
-    imageUrl: 'https://images.pexels.com/photos/18105/pexels-photo.jpg'
-  }
+  // {
+  //   id: '7',
+  //   name: 'Raspberry Pi Starter Kit',
+  //   category: 'DIY Electronics',
+  //   price: 79.99,
+  //   description:
+  //     'A versatile Raspberry Pi kit perfect for programming, electronics projects, and educational purposes.',
+  //   imageUrl: 'https://images.pexels.com/photos/163073/raspberry-pi-computer-linux-163073.jpeg'
+  // },
+  // {
+  //   id: '8',
+  //   name: 'High-End Gaming Mouse',
+  //   category: 'Gaming Gear',
+  //   price: 69.99,
+  //   description:
+  //     'Ergonomic gaming mouse with customizable DPI, RGB lighting, and high precision for competitive gaming.',
+  //   imageUrl: 'https://images.pexels.com/photos/440320/pexels-photo-440320.jpeg'
+  // },
+  // {
+  //   id: '9',
+  //   name: 'Smart AI Assistant',
+  //   category: 'AI Devices',
+  //   price: 199.99,
+  //   description:
+  //     'A voice-activated AI assistant that helps manage your home, answer questions, and streamline your daily tasks.',
+  //   imageUrl: 'https://images.pexels.com/photos/7014951/pexels-photo-7014951.jpeg'
+  // },
+  // {
+  //   id: '10',
+  //   name: 'Smart Health Scale',
+  //   category: 'Health Tech',
+  //   price: 49.99,
+  //   description:
+  //     'A digital health scale that tracks weight, body composition, and syncs with your smartphone for easy monitoring.',
+  //   imageUrl: 'https://images.pexels.com/photos/4790255/pexels-photo-4790255.jpeg'
+  // },
+  // {
+  //   id: '11',
+  //   name: 'Action Camera Pro',
+  //   category: 'Photography Tech',
+  //   price: 299.99,
+  //   description:
+  //     'Compact action camera with 4K recording, waterproof design, and versatile mounting options for adventures.',
+  //   imageUrl: 'https://images.pexels.com/photos/35147262/pexels-photo-35147262.jpeg'
+  // },
+  // {
+  //   id: '12',
+  //   name: 'Wireless Power Bank',
+  //   category: 'Mobile Accessories',
+  //   price: 39.99,
+  //   description:
+  //     'Portable wireless power bank with fast charging and compact design for smartphones and small gadgets.',
+  //   imageUrl: 'https://images.pexels.com/photos/3587478/pexels-photo-3587478.jpeg'
+  // },
+  // {
+  //   id: '13',
+  //   name: 'Gaming Controller Elite',
+  //   category: 'Gaming Gear',
+  //   price: 79.99,
+  //   description:
+  //     'High-performance gaming controller compatible with multiple platforms, featuring ergonomic design and responsive buttons.',
+  //   imageUrl: 'https://images.pexels.com/photos/1298601/pexels-photo-1298601.jpeg'
+  // },
+  // {
+  //   id: '14',
+  //   name: 'Smart Home Speaker',
+  //   category: 'Smart Home',
+  //   price: 99.99,
+  //   description:
+  //     'Voice-controlled smart speaker with rich sound, smart home integration, and hands-free operation.',
+  //   imageUrl: 'https://images.pexels.com/photos/2823936/pexels-photo-2823936.jpeg'
+  // },
+  // {
+  //   id: '15',
+  //   name: 'Wearable Fitness Tracker',
+  //   category: 'Health Tech',
+  //   price: 89.99,
+  //   description:
+  //     'A sleek wearable device that monitors heart rate, steps, and sleep patterns for a healthier lifestyle.',
+  //   imageUrl: 'https://images.pexels.com/photos/18105/pexels-photo.jpg'
+  // }
 ];

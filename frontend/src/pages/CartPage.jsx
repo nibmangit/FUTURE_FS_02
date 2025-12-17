@@ -1,12 +1,12 @@
 import {ChevronLeft} from 'lucide-react'
 import CardItem from "../components/CardItem"
 import { MOCK_PRODUCTS } from "../data/products"
+import { useNavigate } from 'react-router-dom'
 
 function CartPage() {
+  const navigate = useNavigate();
     const cartId = [1,2]
-    const cartItems = MOCK_PRODUCTS.filter(p=>
-        cartId.includes(Number(p.id))
-    )
+    const cartItems = MOCK_PRODUCTS.filter(p=>cartId.includes(Number(p.id)))
     const cartItemCount = cartItems.length
     const cartTotal = 234
     console.log(cartItems, cartItemCount, cartTotal)
@@ -28,12 +28,11 @@ function CartPage() {
                 </div>
               ) : (
                 <div className="grid lg:grid-cols-3 gap-8">
-                  {/* Cart List */}
+                  
                   <div className="lg:col-span-2 bg-gray-900 rounded-xl p-6 border border-gray-800 shadow-xl">
                     {cartItems.map(item => <CardItem key={item.id} item={item} />)}
                   </div>
-        
-                  {/* Order Summary */}
+         
                   <div className="lg:col-span-1 bg-gray-900 rounded-xl p-6 border border-gray-800 shadow-xl self-start">
                     <h2 className="text-2xl font-bold text-white mb-6 border-b border-gray-800 pb-3">
                       Order Summary
@@ -49,6 +48,7 @@ function CartPage() {
                       </div>
                     </div>
                     <button 
+                    onClick={()=>{navigate('/checkout')}}
                       className="w-full mt-8 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-lg rounded-xl shadow-lg transition duration-200 active:scale-[0.99] focus:outline-none focus:ring-4 focus:ring-cyan-500/50"
                     >
                       Proceed to Checkout

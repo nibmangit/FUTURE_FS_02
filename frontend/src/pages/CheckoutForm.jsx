@@ -40,6 +40,8 @@ function CheckoutForm() {
   };
 
   return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"> 
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-md" aria-hidden="true">
     <main className="container mx-auto max-w-lg px-4 sm:px-6 lg:px-8 py-10 min-h-[60vh]">
       <h1 className="text-4xl font-extrabold tracking-tight text-white mb-8">
         Checkout The Form Please
@@ -108,6 +110,8 @@ function CheckoutForm() {
         </button>
       </div>
     </main>
+    </div>
+    </div>
   );
 }
 

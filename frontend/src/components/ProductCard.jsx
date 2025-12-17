@@ -1,15 +1,17 @@
 import { useNavigate } from "react-router-dom";
 
-function ProductCard({product}) {  
+function ProductCard({product,onSelect}) {  
     const navigate = useNavigate()
 
     return (
         <div className="bg-gray-900/70 p-4 rounded-xl shadow-xl border border-gray-800 flex flex-col transition duration-300 hover:shadow-cyan-900/30">
-            <div className="relative overflow-hidden rounded-lg mb-4 cursor-pointer">
+            <div 
+            onClick={()=>onSelect(product)}
+            className="relative overflow-hidden rounded-lg mb-4 cursor-pointer">
             <img
                 src={product.imageUrl}
                 alt={product.name}
-                onClick={()=>{navigate(`/${product.id}`)}}
+                onClick={()=>navigate(`/${product.id}`)}
                 className="w-full h-48 object-cover rounded-lg transform transition duration-500 hover:scale-105"
                 onError={(e) => { e.target.onerror = null; e.target.src = `https://placehold.co/400x300/1e293b/a5f3fc?text=${product.category}`; }}
             />
@@ -19,6 +21,7 @@ function ProductCard({product}) {
                 {product.category}
             </span>
             <h3
+                onClick={()=>onSelect(product)}
                 className="text-lg font-semibold text-gray-100 mb-2 cursor-pointer hover:text-cyan-400 transition"
             >
                 {product.name}
@@ -26,10 +29,12 @@ function ProductCard({product}) {
         <div className="flex items-center justify-between mt-auto pt-2">
             <span className="text-2xl font-bold text-white">${product.price.toFixed(2)}</span>
                 <button 
-                onClick={()=>{navigate(`/${product.id}`)}}
-                className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-medium rounded-lg shadow-md transition duration-200 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-gray-950"
+                onClick={()=>onSelect(product)}
+                className={`px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-medium rounded-lg 
+                    shadow-md transition duration-200 active:scale-[0.98] focus:outline-none focus:ring-2 
+                    focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-gray-950 cursor-pointer`}
                 >
-                Add to Cart
+                Quick View
                 </button>
         </div>
         </div>

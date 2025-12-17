@@ -3,6 +3,8 @@ import { CheckCircle } from "lucide-react";
 function ConfirmationPage() {
     const navigate = useNavigate();
     return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4"> 
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-md" aria-hidden="true">
         <main className="container mx-auto max-w-xl px-4 sm:px-6 lg:px-8 py-20 min-h-[60vh]">
             <div className="bg-gray-900 rounded-xl p-12 text-center border border-gray-800 shadow-xl">
               <CheckCircle size={64} className="text-green-500 mx-auto mb-6" />
@@ -21,6 +23,8 @@ function ConfirmationPage() {
               </button>
             </div>
           </main>
+          </div>
+          </div>
     )
 }
 

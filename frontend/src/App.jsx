@@ -1,12 +1,18 @@
+import Navbar from "./components/Navbar"
+import ProductListPage from "./pages/ProductListPage"
+
  
 
 function App() { 
 
   return (
     <div className="min-h-screen bg-gray-950 font-sans">
-      <div className="text-2xl font-bold tracking-tight text-cyan-400 cursor-pointer">
-        <span className="text-gray-200">Mini</span>Tech
-      </div>
+      <Navbar />
+      <ProductListPage />
+
+      <footer className="w-full py-8 text-center text-gray-600 border-t border-gray-800 mt-10">
+        <p className="text-sm">MiniTech E-Commerce Demo | Designed with Tailwind & React</p>
+      </footer>
     </div>
   )
 }

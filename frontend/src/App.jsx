@@ -8,12 +8,34 @@ import ConfirmationPage from "./pages/ConfirmationPage";
 import { useState } from "react";
 import { MOCK_PRODUCTS } from "./data/products";
 import {useCartContext} from './hooks/useCartContext'; 
+import { useEffect } from "react";
+import { AUTH_KEY } from "./data/getKey";
+import AuthForm from "./pages/AuthForm";
+import OrderHistoryPage from "./pages/OrderHistoryPage";
 
 function App() {
   const navigate = useNavigate(); 
   const {updateCartItem} = useCartContext();
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [categoryFilter, setCategoryFilter] = useState("All");
+  const [userEmail, setUserEmail] = useState(null);
+  const isLoggedIn = !!userEmail;
+
+  console.log(isLoggedIn)
+
+  useEffect(() => {
+    const storedEmail = localStorage.getItem(AUTH_KEY);
+    if (storedEmail) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+        setUserEmail(storedEmail);
+    }
+  }, []);
+
+  const handleLogin=(email)=>{
+    localStorage.setItem(AUTH_KEY, email);
+    setUserEmail(email);
+    navigate('/')
+  } 
 
   const handleAddToCart = (product, quantity = 1) => {
     const fullProductDetails = MOCK_PRODUCTS.find(p => p.id === product.id) || product;
@@ -70,6 +92,8 @@ function App() {
         <CartPage />} />
         <Route path="/checkout" element={<CheckoutForm />} />
         <Route path="/confirmation" element={<ConfirmationPage />} />
+        <Route path="/authform" element={<AuthForm handleLogin={handleLogin} />} />
+        <Route path="/orderhistory" element={<OrderHistoryPage />} />
       </Routes>
 
       <footer className="w-full py-8 text-center text-gray-600 border-t border-gray-800 mt-10">

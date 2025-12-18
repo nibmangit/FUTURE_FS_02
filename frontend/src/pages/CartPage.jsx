@@ -3,7 +3,7 @@ import CardItem from "../components/CardItem";
 import { useNavigate } from 'react-router-dom';
 import {useCartContext} from '../hooks/useCartContext';
 
-function CartPage() {
+function CartPage({isLoggedIn}) {
   const { cartItems, cartTotal, cartItemCount, updateCartItem} = useCartContext();
    const navigate = useNavigate();  
 
@@ -44,17 +44,33 @@ function CartPage() {
                         <span className="text-xl font-extrabold text-white">${cartTotal}</span>
                       </div>
                     </div>
-                    <button 
+
+                    {!isLoggedIn && (
+                    <div className="mt-6 p-4 bg-gray-800 rounded-lg border border-cyan-700/50">
+                        <p className="text-sm text-cyan-400 font-medium">
+                            You must be logged in to proceed to checkout.
+                        </p>
+                        <button
+                            onClick={() => navigate('/authform')}
+                            className="w-full mt-3 py-2 text-cyan-300 border border-cyan-500 rounded-lg hover:bg-cyan-700/30 transition cursor-pointer"
+                        >
+                            Login / Sign Up
+                        </button>
+                    </div>
+                )}
+                  <button 
                     onClick={()=>{navigate('/checkout')}}
-                      className={`w-full mt-8 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-lg rounded-xl shadow-lg transition 
-                        duration-200 active:scale-[0.99] focus:outline-none focus:ring-4 focus:ring-cyan-500/50 cursor-pointer`}
-                    >
-                      Proceed to Checkout
-                    </button>
-                  </div>
+                    disabled={!isLoggedIn}
+                    className={`w-full mt-8 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-lg rounded-xl shadow-lg transition 
+                      duration-200 active:scale-[0.99] focus:outline-none focus:ring-4 focus:ring-cyan-500/50 
+                      disabled:cursor-not-allowed cursor-pointer`}
+                  >
+                    Proceed to Checkout
+                  </button>
                 </div>
-              )}
-            </main>
+              </div>
+            )}
+          </main>
     )
 }
 

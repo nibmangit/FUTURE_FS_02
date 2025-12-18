@@ -3,11 +3,12 @@ import {useNavigate } from 'react-router-dom';
 import InputField from "../components/InputField";
 import { useCartContext } from "../hooks/useCartContext";
 import { ArrowLeft, Loader2 } from "lucide-react";
+import { saveOrderToHistory } from "../components/GetOrSaveOrderHistory";
 
-function CheckoutForm() {
-  const { cartTotal, clearCart } = useCartContext();
+function CheckoutForm({userEmail, setConfirmationId}) {
+  const {cartItems, cartTotal, clearCart } = useCartContext();
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({fullName: "", email: "", address: "",});
+  const [formData, setFormData] = useState({fullName: "", email:userEmail, address: "",});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -27,7 +28,9 @@ function CheckoutForm() {
       setIsSubmitting(true);
 
       await new Promise((resolve) => setTimeout(resolve, 1500));
-
+      
+      const orderId = saveOrderToHistory(cartItems, cartTotal, userEmail);
+      setConfirmationId(orderId);
       setIsSubmitting(false);
       clearCart();
       navigate('/confirmation');
@@ -51,18 +54,18 @@ function CheckoutForm() {
           <InputField
             formData={formData}
             handleChange={handleChange}
-            label="Full Name"
-            name="fullName"
-            error={errors.fullName}
-          />
-          <InputField
-            formData={formData}
-            handleChange={handleChange}
-            label="Email Address"
+            label="Email Address (Linked to Account)"
             name="email"
             type="email"
             error={errors.email}
           />
+          <InputField
+            formData={formData}
+            handleChange={handleChange}
+            label="Full Name"
+            name="fullName"
+            error={errors.fullName}
+          /> 
           <InputField
             formData={formData}
             handleChange={handleChange}

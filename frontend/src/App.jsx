@@ -7,44 +7,31 @@ import CheckoutForm from "./pages/CheckoutForm";
 import ConfirmationPage from "./pages/ConfirmationPage";
 import { useState } from "react";
 import { MOCK_PRODUCTS } from "./data/products";
-import {useCartContext} from './hooks/useCartContext'; 
-import { useEffect } from "react";
-import { AUTH_KEY } from "./data/getKey";
+import { useCartContext } from "./hooks/useCartContext";
 import AuthForm from "./pages/AuthForm";
 import OrderHistoryPage from "./pages/OrderHistoryPage";
+import { useAuth } from "./hooks/useAuth";
 
 function App() {
-  const navigate = useNavigate(); 
-  const {updateCartItem} = useCartContext();
+  const navigate = useNavigate();
+  const { updateCartItem } = useCartContext();
+  const { user, logout } = useAuth();
+  
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [categoryFilter, setCategoryFilter] = useState("All");
-  const [userEmail, setUserEmail] = useState(null);
-  const isLoggedIn = !!userEmail;
-
-  console.log(isLoggedIn)
-
-  useEffect(() => {
-    const storedEmail = localStorage.getItem(AUTH_KEY);
-    if (storedEmail) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-        setUserEmail(storedEmail);
-    }
-  }, []);
-
-  const handleLogin=(email)=>{
-    localStorage.setItem(AUTH_KEY, email);
-    setUserEmail(email);
-    navigate('/')
-  } 
+  const [confirmationId, setConfirmationId] = useState(null);
+  
+  const isLoggedIn = !!user;
 
   const handleAddToCart = (product, quantity = 1) => {
-    const fullProductDetails = MOCK_PRODUCTS.find(p => p.id === product.id) || product;
+    const fullProductDetails =
+      MOCK_PRODUCTS.find((p) => p.id === product.id) || product;
 
     const productDataForStorage = {
-        name: fullProductDetails.name,
-        price: fullProductDetails.price,
-        imageUrl: fullProductDetails.imageUrl,
-        category: fullProductDetails.category
+      name: fullProductDetails.name,
+      price: fullProductDetails.price,
+      imageUrl: fullProductDetails.imageUrl,
+      category: fullProductDetails.category,
     };
 
     updateCartItem(product.id, productDataForStorage, quantity);
@@ -54,7 +41,6 @@ function App() {
 
   const onClose = () => {
     setSelectedProduct(null);
-    navigate(`/`);
   };
 
   return (
@@ -65,7 +51,11 @@ function App() {
         .font-sans { font-family: 'Inter', sans-serif; }
       `}</style>
       <header className="sticky top-0 z-10 w-full bg-gray-950/90 backdrop-blur-sm border-b border-gray-800 shadow-xl">
-        <Navbar />
+        <Navbar
+          isLoggedIn={isLoggedIn}
+          handleLogout={logout}
+          userEmail={user?.email}
+        />
       </header>
 
       <Routes>
@@ -83,17 +73,42 @@ function App() {
         <Route
           path="/:id"
           element={
-            <ProductDetailModal product={selectedProduct} onClose={onClose} onAddToCart={handleAddToCart} />
+            <ProductDetailModal
+              product={selectedProduct}
+              onClose={onClose}
+              onAddToCart={handleAddToCart}
+            />
           }
         />
-        <Route 
-        path="/cart" 
-        element={
-        <CartPage />} />
-        <Route path="/checkout" element={<CheckoutForm />} />
-        <Route path="/confirmation" element={<ConfirmationPage />} />
-        <Route path="/authform" element={<AuthForm handleLogin={handleLogin} />} />
-        <Route path="/orderhistory" element={<OrderHistoryPage />} />
+        <Route path="/cart" element={<CartPage isLoggedIn={isLoggedIn} />} />
+        <Route
+          path="/checkout"
+          element={
+            isLoggedIn ? (
+              <CheckoutForm
+                userEmail={user?.email}
+                setConfirmationId={setConfirmationId}
+              />
+            ) : (
+              <AuthForm />
+            )
+          }
+        />
+        <Route
+          path="/confirmation"
+          element={isLoggedIn ? <ConfirmationPage confirmationId={confirmationId} /> : <AuthForm />}
+        />
+        <Route
+          path="/authform"
+          element={<AuthForm />}
+        />
+        <Route
+          path="/orderhistory"
+          element={
+              isLoggedIn ? (
+                <OrderHistoryPage userEmail={user?.email} />
+              ) : (<AuthForm /> ) }
+        />
       </Routes>
 
       <footer className="w-full py-8 text-center text-gray-600 border-t border-gray-800 mt-10">

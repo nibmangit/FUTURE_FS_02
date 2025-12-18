@@ -1,19 +1,23 @@
 import { useState } from "react";
-import {useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Loader2 } from "lucide-react";
 import InputField from "../components/InputField";
+import { useAuth } from "../hooks/useAuth";
 
-function AuthForm({handleLogin}) {
+function AuthForm() {
     const navigate = useNavigate();
+    const { login, signup } = useAuth();
+    
     const [isLogin, setIsLogin] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [formData, setFormData] = useState({ email: '', password: '' });
-    const [errors, setErrors] = useState({})
+    const [errors, setErrors] = useState({});
+    const [authError, setAuthError] = useState('');
 
     const validate = () => {
         const newErrors = {}; 
         if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email))
-        newErrors.email = "Valid Email is required";
+            newErrors.email = "Valid Email is required";
         if (!formData.password) newErrors.password = "Password is required";
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -21,20 +25,28 @@ function AuthForm({handleLogin}) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setAuthError('');
+        
         if (validate()) {
             setIsSubmitting(true);
             
             try {
-                const action = isLogin ? 'Logging in...' : 'Signing up...';
-                console.log(`${action} with:`, formData.email);
+                let result;
                 
-                // Simulating API call with a delay
-                await new Promise(resolve => setTimeout(resolve, 1500));
+                if (isLogin) {
+                    result = await login(formData.email, formData.password);
+                } else {
+                    result = await signup(formData.email, formData.password);
+                }
                 
-                handleLogin(formData.email);
-                navigate('/');
+                if (result.success) {
+                    navigate('/');
+                } else {
+                    setAuthError(result.error || 'Authentication failed');
+                }
             } catch (error) {
                 console.error('Error:', error);
+                setAuthError('An unexpected error occurred');
             } finally {
                 setIsSubmitting(false);
             }
@@ -43,12 +55,19 @@ function AuthForm({handleLogin}) {
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value }); 
+        if (errors[e.target.name]) {
+            setErrors({ ...errors, [e.target.name]: '' });
+        }
+        if (authError) {
+            setAuthError('');
+        }
     };
 
     const toggleMode = () => {
         setIsLogin(p => !p); 
         setFormData({ email: '', password: '' });
         setErrors({});
+        setAuthError('');
     };
 
     return (
@@ -59,6 +78,13 @@ function AuthForm({handleLogin}) {
             {isLogin ? 'Welcome Back' : 'Create Account'}
           </h1>
           <div className="bg-gray-900 rounded-xl p-8 border border-gray-800 shadow-xl">
+            
+            {authError && (
+              <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg">
+                <p className="text-red-400 text-sm text-center">{authError}</p>
+              </div>
+            )}
+            
             <form onSubmit={handleSubmit}> 
               <InputField formData={formData} handleChange={handleChange} label={isLogin? "Email Address":"Email Address(👉 Used for order)"} name="email" type="email" error={errors.email} />
               <InputField formData={formData} handleChange={handleChange} label="Password" name="password" type="password" error={errors.password} />
@@ -99,4 +125,4 @@ function AuthForm({handleLogin}) {
     )
 }
 
-export default AuthForm
+export default AuthForm;

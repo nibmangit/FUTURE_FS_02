@@ -1,8 +1,8 @@
-import {ShoppingBag} from 'lucide-react';
+import {ShoppingBag, LogOut, User} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCartContext } from '../hooks/useCartContext';
 
-function Navbar() { 
+function Navbar({isLoggedIn, handleLogout, userEmail}) { 
   const {cartItemCount} = useCartContext();
   const navigate = useNavigate(); 
   
@@ -22,9 +22,37 @@ function Navbar() {
               >
                 Products
               </button>
+              {isLoggedIn ? (
+                <>
+                  <button
+                    onClick={() => navigate('/orderhistory')}
+                    className="text-gray-400 hover:text-cyan-400 transition flex items-center space-x-1 cursor-pointer"
+                    title="View Order History"
+                  >
+                    <User size={20} />
+                    <span className="hidden sm:inline-block truncate max-w-20">{userEmail}</span>
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="text-gray-400 hover:text-red-400 transition cursor-pointer"
+                    title="Logout"
+                  >
+                    <LogOut size={20} />
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => navigate('/authform')}
+                  className="text-gray-400 hover:text-cyan-400 transition flex items-center space-x-1 cursor-pointer"
+                >
+                  <User size={20} />
+                  <span>Login / Sign Up</span>
+                </button>
+              )}
               <button 
                 onClick={()=>{navigate("/cart")}}
                 className="relative text-gray-400 hover:text-cyan-400 transition cursor-pointer"
+                title='Cart'
               >
                 <ShoppingBag size={24} />
                 {cartItemCount > 0 && (

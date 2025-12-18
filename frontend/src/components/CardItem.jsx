@@ -1,9 +1,20 @@
 import {X, Minus, Plus} from 'lucide-react';
 import { MOCK_PRODUCTS } from "../data/products";
+import { useCartContext } from '../hooks/useCartContext';
 
 function CardItem({item}) {
+    const {updateCartItem} = useCartContext();
     const product = MOCK_PRODUCTS.find(p => p.id === item.id) || item;
-    const quantity = 3;
+
+    const handleQuantityChange = (change) => {
+      const fullDetails = MOCK_PRODUCTS.find(p => p.id === item.id) || { name: item.name, price: item.price, imageUrl: item.imageUrl, category: item.category };
+      updateCartItem(item.id, fullDetails, change);
+    };
+    
+    const handleRemove = () => {
+      updateCartItem(item.id, {}, -item.quantity);
+    };
+
     return (
         <div className="flex items-center space-x-4 p-4 border-b border-gray-800 last:border-b-0">
                 <img
@@ -18,23 +29,26 @@ function CardItem({item}) {
                 </div>
                 <div className="flex items-center space-x-2 text-gray-300">
                   <button 
-                    disabled={quantity <= 1}
-                    className="p-1 rounded-full hover:bg-gray-700 disabled:opacity-50 transition"
+                    onClick={() => handleQuantityChange(-1)}
+                    disabled={item.quantity <= 1}
+                    className="p-1 rounded-full hover:bg-gray-700 disabled:opacity-50 transition cursor-pointer"
                   >
                     <Minus size={16} />
                   </button>
-                  <span className="w-5 text-center">{quantity}</span>
+                  <span className="w-5 text-center">{item.quantity}</span>
                   <button 
-                    className="p-1 rounded-full hover:bg-gray-700 transition"
+                    onClick={() => handleQuantityChange(1)}
+                    className="p-1 rounded-full hover:bg-gray-700 transition cursor-pointer"
                   >
                     <Plus size={16} />
                   </button>
                 </div>
                 <div className="font-bold text-lg w-20 text-right text-white">
-                  ${(item.price * quantity).toFixed(2)}
+                  ${(item.price * item.quantity).toFixed(2)}
                 </div>
                 <button 
-                  className="text-gray-500 hover:text-red-500 transition p-1"
+                  onClick={handleRemove}
+                  className="text-gray-500 hover:text-red-500 transition p-1 cursor-pointer"
                 >
                   <X size={18} />
                 </button>

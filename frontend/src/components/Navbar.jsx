@@ -1,9 +1,11 @@
 import {ShoppingBag} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useCartContext } from '../hooks/useCartContext';
 
 function Navbar() { 
-  const navigate = useNavigate();
-  const cartItemCount =3;
+  const {cartItemCount} = useCartContext();
+  const navigate = useNavigate(); 
+  
   return (
       <header className="sticky top-0 z-10 w-full bg-gray-950/90 backdrop-blur-sm border-b border-gray-800 shadow-xl">
           <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">

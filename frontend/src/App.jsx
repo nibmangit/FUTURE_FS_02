@@ -7,11 +7,28 @@ import CheckoutForm from "./pages/CheckoutForm";
 import ConfirmationPage from "./pages/ConfirmationPage";
 import { useState } from "react";
 import { MOCK_PRODUCTS } from "./data/products";
+import {useCartContext} from './hooks/useCartContext'; 
 
 function App() {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
+  const {updateCartItem} = useCartContext();
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [categoryFilter, setCategoryFilter] = useState("All");
+
+  const handleAddToCart = (product, quantity = 1) => {
+    const fullProductDetails = MOCK_PRODUCTS.find(p => p.id === product.id) || product;
+
+    const productDataForStorage = {
+        name: fullProductDetails.name,
+        price: fullProductDetails.price,
+        imageUrl: fullProductDetails.imageUrl,
+        category: fullProductDetails.category
+    };
+
+    updateCartItem(product.id, productDataForStorage, quantity);
+    setSelectedProduct(null);
+    navigate('/');
+  };
 
   const onClose = () => {
     setSelectedProduct(null);
@@ -44,10 +61,13 @@ function App() {
         <Route
           path="/:id"
           element={
-            <ProductDetailModal product={selectedProduct} onClose={onClose} />
+            <ProductDetailModal product={selectedProduct} onClose={onClose} onAddToCart={handleAddToCart} />
           }
         />
-        <Route path="/cart" element={<CartPage />} />
+        <Route 
+        path="/cart" 
+        element={
+        <CartPage />} />
         <Route path="/checkout" element={<CheckoutForm />} />
         <Route path="/confirmation" element={<ConfirmationPage />} />
       </Routes>

@@ -1,7 +1,18 @@
+
 import { Plus, Minus, X } from "lucide-react"; 
+import { useState } from "react";
 
 
-function ProductDetailModal({onClose, product}) {  
+function ProductDetailModal({onClose, product, onAddToCart}) { 
+
+  const [quantity, setQuantity] = useState(1);
+  
+    if (!product) return null; 
+  
+    const handleAdd = () => {
+      onAddToCart(product, quantity);
+      onClose();
+    }; 
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-md">
@@ -34,13 +45,15 @@ function ProductDetailModal({onClose, product}) {
                     <div className="flex items-center space-x-4 mb-8">
                       <label htmlFor="quantity" className="text-gray-300 font-medium">Quantity:</label>
                       <div className="flex items-center border border-gray-700 rounded-lg">
-                        <button 
+                        <button
+                          onClick={() => setQuantity(q => Math.max(1, q - 1))}
                           className="p-2 text-gray-300 hover:bg-gray-700 rounded-l-lg transition cursor-pointer"
                         >
                           <Minus size={18} />
                         </button>
-                        <span className="w-10 text-center text-white font-medium">2</span>
+                        <span className="w-10 text-center text-white font-medium">{quantity}</span>
                         <button 
+                          onClick={()=>setQuantity(q=>q+1)}
                           className="p-2 text-gray-300 hover:bg-gray-700 rounded-r-lg transition cursor-pointer"
                         >
                           <Plus size={18} />
@@ -49,11 +62,12 @@ function ProductDetailModal({onClose, product}) {
                     </div>
          
                     <button 
+                      onClick={handleAdd}
                       className={`w-full py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-lg 
                         rounded-xl shadow-lg transition duration-200 active:scale-[0.99] focus:outline-none focus:ring-4 
                         focus:ring-cyan-500/50 cursor-pointer`}
                     >
-                      Add 2 to Cart
+                      Add {quantity} to Cart
                     </button>
                   </div>
                 </div>

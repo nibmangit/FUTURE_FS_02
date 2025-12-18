@@ -1,14 +1,12 @@
 import { useState } from "react";
 import {useNavigate } from 'react-router-dom';
 import InputField from "../components/InputField";
+import { useCartContext } from "../hooks/useCartContext";
 
 function CheckoutForm() {
-  const navigate = useNavigate()
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    address: "",
-  });
+  const { cartTotal, clearCart } = useCartContext();
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({fullName: "", email: "", address: "",});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -30,7 +28,8 @@ function CheckoutForm() {
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       setIsSubmitting(false);
-      navigate('/confirmation')
+      clearCart();
+      navigate('/confirmation');
 
     }
   };
@@ -100,9 +99,7 @@ function CheckoutForm() {
                 </svg>
                 Processing Order...
               </>
-            ) : (
-              "Place Order"
-            )}
+            ) : `Pay $${cartTotal}`}
           </button>
         </form>
         <button className="mt-4 w-full text-gray-500 hover:text-white transition cursor-pointer">

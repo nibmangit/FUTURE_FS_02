@@ -125,7 +125,7 @@ const LandingPage = () => {
                   />
                   <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
                     <div className="w-full py-3 bg-white text-black text-center font-black rounded-xl text-xs uppercase tracking-widest transform translate-y-4 group-hover:translate-y-0 transition-transform">
-                      Deploy Hardware
+                      View Details
                     </div>
                   </div>
                 </div>

@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Loader2 } from "lucide-react";
 import InputField from "../components/InputField";
 import { useAuth } from "../hooks/useAuth";
 
 function AuthForm() {
     const navigate = useNavigate();
+    const location = useLocation();
     const { login, signup } = useAuth();
     
     const [isLogin, setIsLogin] = useState(true);
@@ -14,6 +15,7 @@ function AuthForm() {
     const [errors, setErrors] = useState({});
     const [authError, setAuthError] = useState('');
 
+    const redirectPath = location.state?.from || '/';
     const validate = () => {
         const newErrors = {}; 
         if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email))
@@ -40,7 +42,7 @@ function AuthForm() {
                 }
                 
                 if (result.success) {
-                    navigate('/');
+                    navigate(redirectPath,{replace:true});
                 } else {
                     setAuthError(result.error || 'Authentication failed');
                 }

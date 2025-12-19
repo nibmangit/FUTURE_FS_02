@@ -1,6 +1,4 @@
-import { MOCK_PRODUCTS as products } from "../data/products";
-
-const ListCategory=()=>{
+const ListCategory=(products)=>{ 
     const CATEGORIES = [
         "All", ...new Set(products.map(product => product.category))
     ] 

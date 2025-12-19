@@ -1,31 +1,38 @@
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { useState } from "react"; 
+import { useCartContext } from "./hooks/useCartContext";
+import { useAuth } from "./hooks/useAuth";
+
 import Navbar from "./components/Navbar";
 import ProductListPage from "./pages/ProductListPage";
 import ProductDetailModal from "./pages/ProductDetailModal";
 import CartPage from "./pages/CartPage";
 import CheckoutForm from "./pages/CheckoutForm";
 import ConfirmationPage from "./pages/ConfirmationPage";
-import { useState } from "react";
-import { MOCK_PRODUCTS } from "./data/products";
-import { useCartContext } from "./hooks/useCartContext";
 import AuthForm from "./pages/AuthForm";
 import OrderHistoryPage from "./pages/OrderHistoryPage";
-import { useAuth } from "./hooks/useAuth";
+import ProtectedRoute from './components/ProtectedRoute';
+import NotFound from "./pages/NotFound";
+import { useProducts } from "./hooks/useProducts"; 
+import Footer from "./components/Footer";
 
 function App() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { updateCartItem } = useCartContext();
   const { user, logout } = useAuth();
-  
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const {products, isProductLoading} = useProducts()
+   
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [confirmationId, setConfirmationId] = useState(null);
   
   const isLoggedIn = !!user;
 
   const handleAddToCart = (product, quantity = 1) => {
+    if(isProductLoading) return;
+
     const fullProductDetails =
-      MOCK_PRODUCTS.find((p) => p.id === product.id) || product;
+      products.find((p) => p.id === product.id) || product;
 
     const productDataForStorage = {
       name: fullProductDetails.name,
@@ -34,14 +41,13 @@ function App() {
       category: fullProductDetails.category,
     };
 
-    updateCartItem(product.id, productDataForStorage, quantity);
-    setSelectedProduct(null);
+    updateCartItem(product.id, productDataForStorage, quantity); 
     navigate('/');
-  };
+  }; 
 
-  const onClose = () => {
-    setSelectedProduct(null);
-  };
+  const isAuthOrCheckout = ['/checkout', '/authform'].includes(location.pathname);
+  const knownRoutes = ['/', '/cart', '/checkout', '/confirmation', '/authform', '/orderhistory'];
+  const isNotFound = !knownRoutes.includes(location.pathname) && !location.pathname.startsWith('/product/');
 
   return (
     <div className="min-h-screen bg-gray-950 font-sans">
@@ -50,72 +56,45 @@ function App() {
         html { scroll-behavior: smooth; }
         .font-sans { font-family: 'Inter', sans-serif; }
       `}</style>
+      {!isAuthOrCheckout &&
       <header className="sticky top-0 z-10 w-full bg-gray-950/90 backdrop-blur-sm border-b border-gray-800 shadow-xl">
         <Navbar
           isLoggedIn={isLoggedIn}
           handleLogout={logout}
           userEmail={user?.email}
         />
-      </header>
+      </header>}
+    <main className="grow">
+        <Routes>
+          <Route path="/" element={<ProductListPage filter={categoryFilter} setFilter={setCategoryFilter} />} />
+          <Route path="product/:id" element={<ProductDetailModal onAddToCart={handleAddToCart} />} />
+          <Route path="/cart" element={<CartPage isLoggedIn={isLoggedIn} />} />
+          
+          <Route path="/checkout" element={
+            <ProtectedRoute>
+              <CheckoutForm userEmail={user?.email} setConfirmationId={setConfirmationId} />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/confirmation" element={
+            <ProtectedRoute>
+              <ConfirmationPage confirmationId={confirmationId} />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/authform" element={<AuthForm />} />
+          
+          <Route path="/orderhistory" element={
+            <ProtectedRoute>
+              <OrderHistoryPage userEmail={user?.email} />
+            </ProtectedRoute>
+          } />
 
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <ProductListPage
-              setSelectedProduct={setSelectedProduct}
-              products={MOCK_PRODUCTS}
-              filter={categoryFilter}
-              setFilter={setCategoryFilter}
-            />
-          }
-        />
-        <Route
-          path="/:id"
-          element={
-            <ProductDetailModal
-              product={selectedProduct}
-              onClose={onClose}
-              onAddToCart={handleAddToCart}
-            />
-          }
-        />
-        <Route path="/cart" element={<CartPage isLoggedIn={isLoggedIn} />} />
-        <Route
-          path="/checkout"
-          element={
-            isLoggedIn ? (
-              <CheckoutForm
-                userEmail={user?.email}
-                setConfirmationId={setConfirmationId}
-              />
-            ) : (
-              <AuthForm />
-            )
-          }
-        />
-        <Route
-          path="/confirmation"
-          element={isLoggedIn ? <ConfirmationPage confirmationId={confirmationId} /> : <AuthForm />}
-        />
-        <Route
-          path="/authform"
-          element={<AuthForm />}
-        />
-        <Route
-          path="/orderhistory"
-          element={
-              isLoggedIn ? (
-                <OrderHistoryPage userEmail={user?.email} />
-              ) : (<AuthForm /> ) }
-        />
-      </Routes>
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </main>
 
-      <footer className="w-full py-8 text-center text-gray-600 border-t border-gray-800 mt-10">
-        <p className="text-sm">
-          MiniTech E-Commerce Demo | Designed with Tailwind & React
-        </p>
-      </footer>
+      {!isAuthOrCheckout && !isNotFound && <Footer />}
     </div>
   );
 }

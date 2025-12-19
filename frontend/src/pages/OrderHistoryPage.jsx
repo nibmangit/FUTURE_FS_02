@@ -18,7 +18,7 @@ function OrderHistoryPage({userEmail}) {
                 <p className="text-gray-400 text-xl mb-4">No past orders found.</p>
                 <button
                     onClick={() => navigate('/')}
-                    className="text-cyan-400 hover:text-cyan-300 transition flex items-center justify-center mx-auto"
+                    className="text-cyan-400 hover:text-cyan-300 transition flex items-center justify-center mx-auto cursor-pointer"
                 >
                     <ChevronLeft size={20} className="mr-1" /> Start Shopping
                 </button>
@@ -52,7 +52,7 @@ function OrderHistoryPage({userEmail}) {
         )}
         <button
             onClick={() => navigate('/')}
-            className="mt-8 text-gray-400 hover:text-cyan-400 transition flex items-center space-x-1"
+            className="mt-8 text-gray-400 hover:text-cyan-400 transition flex items-center space-x-1 cursor-pointer"
         >
             <ChevronLeft size={20} />
             <span>Back to Products</span>

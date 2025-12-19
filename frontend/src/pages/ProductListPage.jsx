@@ -1,25 +1,30 @@
 import { Search } from "lucide-react" 
-import ProductCard from "../components/ProductCard" 
-import { useNavigate } from "react-router-dom"; 
+import ProductCard from "../components/ProductCard"  
 import FindCategory from "../components/ListCategory";
-import { useState } from "react";
+import { useState, useMemo  } from "react";
+import { useProducts } from "../hooks/useProducts";
+import LoadingScreen from '../pages/LoadingScreen'
 
-const CATEGORIES = FindCategory();
+function ProductListPage({filter,setFilter}) {
+  const { products, isProductLoading, error } = useProducts();
+  const [searchTerm, setSearchTerm] = useState(''); 
+  
+  const CATEGORIES = useMemo(() => FindCategory(products), [products]);
+  const filteredProducts = useMemo(() => {
+  const term = searchTerm.toLowerCase();
 
-function ProductListPage({products,setSelectedProduct,filter,setFilter}) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const navigate = useNavigate()
-
-  const filteredProducts = products.filter(p => {
+  return products.filter(p => {
     const matchesCategory = filter === 'All' || p.category === filter;
-    const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      p.name.toLowerCase().includes(term) ||
+      p.category.toLowerCase().includes(term) ||
+      p.description.toLowerCase().includes(term) ||
+      p.price.toString().includes(term);
     return matchesCategory && matchesSearch;
   });
-
-  const onSelect = (product) => {
-    setSelectedProduct(product);
-    navigate(`/${product.id}`);
-  }; 
+  }, [products, filter, searchTerm]);
+  
+  if (isProductLoading) return <LoadingScreen />;
 
     return (
         <main className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
@@ -58,16 +63,14 @@ function ProductListPage({products,setSelectedProduct,filter,setFilter}) {
         
       {filteredProducts.length === 0 ? (
         <div className="text-center py-20 text-gray-500">
-          No products found.
+          {error}
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {filteredProducts.map(product => (
             <ProductCard
               key={product.id}
-              product={product}
-              setSelectedProduct={setSelectedProduct}
-              onSelect={onSelect}
+              product={product}  
             />
           ))}
         </div>

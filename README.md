@@ -22,3 +22,10 @@ Future Interns Full Stack Web Development internship.
 - Order history (frontend)
 - Authentication flow (frontend only)
 - Responsive & dark UI 
+
+## Live Demo
+https://future-fs-02-black.vercel.app/
+
+## Notes
+- Backend is optional and not included (frontend is fully functional)
+- Designed to be extended with Django REST API or any backend in the future

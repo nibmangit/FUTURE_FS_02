@@ -8,6 +8,7 @@ Future Interns Full Stack Web Development internship.
 - React (Vite)
 - Tailwind CSS v4
 - Context API
+- Custom Hooks
 - Fake API (DummyJSON)
 - React Router
 
@@ -20,6 +21,4 @@ Future Interns Full Stack Web Development internship.
 - Order confirmation page
 - Order history (frontend)
 - Authentication flow (frontend only)
-- Responsive & dark UI
-
-## Folder Structure
+- Responsive & dark UI 

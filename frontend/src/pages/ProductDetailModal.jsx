@@ -11,7 +11,7 @@ function ProductDetailModal({ onAddToCart }) {
   const [quantity, setQuantity] = useState(1);
   const product = products.find((p) => p.id === id);
 
-  const handleClose = () => navigate('/');
+  const handleClose = () => navigate('/products');
 
   const handleAdd = () => {
     if (product) {

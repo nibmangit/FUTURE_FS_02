@@ -32,7 +32,7 @@ function ConfirmationPage({ confirmationId }) {
     
           <div className="flex flex-col gap-4">
             <button
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/products')}
               className="w-full py-4 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl shadow-lg transition-all duration-200 active:scale-[0.98] cursor-pointer"
             >
               Continue Shopping

@@ -8,17 +8,31 @@ function Navbar({isLoggedIn, handleLogout, userEmail}) {
   const navigate = useNavigate();
   
   return (
-      <header className="sticky top-0 z-10 w-full bg-gray-950/90 backdrop-blur-sm border-b border-gray-800 shadow-xl">
-          <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
+      <header className="sticky top-0 z-100 w-full bg-[#030712]/80 backdrop-blur-xl border-b border-white/10 shadow-2xl">
+        <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
             <div
-              onClick={() => { navigate("/") }}
-              className="text-2xl font-bold tracking-tight text-cyan-400 cursor-pointer"
-            >
-              <span className="text-gray-200">Mini</span>Tech <span className="hidden sm:inline">Shop</span>
+              onClick={() => navigate("/")}
+              className="group flex items-center gap-3 cursor-pointer"
+            > 
+              <div className="relative">
+                <div className="absolute inset-0 bg-cyan-500/20 blur-md rounded-full group-hover:bg-cyan-500/40 transition-all" />
+                <img 
+                  src="/logo.png"
+                  alt="MiniTech" 
+                  className="relative h-9 w-9 sm:h-10 sm:w-10 object-contain transition-transform group-hover:rotate-[5deg]"
+                />
+              </div> 
+            <div className="hidden md:flex flex-col leading-none">
+              <span className="text-xl font-black tracking-tighter text-white uppercase italic">
+                  Mini<span className="text-cyan-400">Tech</span>
+                  <span className="hidden lg:inline text-gray-400 ml-2">Shop</span>
+              </span> 
             </div>
+        </div>
+
             <nav className="flex items-center space-x-6">
               <button
-                onClick={()=>{navigate("/")}} 
+                onClick={()=>{navigate("/products")}} 
                 className="text-gray-400 hover:text-cyan-400 transition cursor-pointer"
               >
                 Products

@@ -15,6 +15,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import NotFound from "./pages/NotFound";
 import { useProducts } from "./hooks/useProducts"; 
 import Footer from "./components/Footer";
+import LandingPage from "./pages/LandingPage";
 
 function App() {
   const navigate = useNavigate();
@@ -42,7 +43,7 @@ function App() {
     };
 
     updateCartItem(product.id, productDataForStorage, quantity); 
-    navigate('/');
+    navigate('/products');
   }; 
 
   const isAuthOrCheckout = ['/checkout', '/authform'].includes(location.pathname);
@@ -56,17 +57,11 @@ function App() {
         html { scroll-behavior: smooth; }
         .font-sans { font-family: 'Inter', sans-serif; }
       `}</style>
-      {!isAuthOrCheckout &&
-      <header className="sticky top-0 z-10 w-full bg-gray-950/90 backdrop-blur-sm border-b border-gray-800 shadow-xl">
-        <Navbar
-          isLoggedIn={isLoggedIn}
-          handleLogout={logout}
-          userEmail={user?.email}
-        />
-      </header>}
+      {!isAuthOrCheckout &&  <Navbar isLoggedIn={isLoggedIn} handleLogout={logout} userEmail={user?.email} /> }
     <main className="grow">
         <Routes>
-          <Route path="/" element={<ProductListPage filter={categoryFilter} setFilter={setCategoryFilter} />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/products" element={<ProductListPage filter={categoryFilter} setFilter={setCategoryFilter} />} />
           <Route path="product/:id" element={<ProductDetailModal onAddToCart={handleAddToCart} />} />
           <Route path="/cart" element={<CartPage isLoggedIn={isLoggedIn} />} />
           
@@ -83,7 +78,6 @@ function App() {
           } />
           
           <Route path="/authform" element={<AuthForm />} />
-          
           <Route path="/orderhistory" element={
             <ProtectedRoute>
               <OrderHistoryPage userEmail={user?.email} />

@@ -157,7 +157,7 @@ function CheckoutForm({ userEmail, setConfirmationId }) {
                   <>
                     <InputField
                       label="Account Owner Name" name="accountName" error={errors.accountName}
-                      formData={formData} handleChange={handleChange} placeholder="John Doe"
+                      formData={formData} handleChange={handleChange} placeholder="Nib Man"
                     />
                     <InputField
                       label="Account Number" name="accountNumber" error={errors.accountNumber}

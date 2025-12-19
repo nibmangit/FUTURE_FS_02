@@ -18,7 +18,7 @@ function CartPage({isLoggedIn}) {
         <div className="text-center py-20 bg-gray-900/50 rounded-2xl border border-dashed border-gray-800">
           <p className="text-gray-400 text-xl mb-6">Your cart is empty.</p>
           <button 
-            onClick={()=>navigate('/')}
+            onClick={()=>navigate('/products')}
             className="inline-flex items-center px-6 py-3 bg-gray-800 hover:bg-gray-700 text-cyan-400 rounded-xl transition cursor-pointer"
           >
             <ChevronLeft size={20} className="mr-2" /> Start Exploring
@@ -34,7 +34,7 @@ function CartPage({isLoggedIn}) {
             </div>
             
             <button 
-              onClick={()=>navigate('/')}
+              onClick={()=>navigate('/products')}
               className="hidden sm:flex items-center text-gray-500 hover:text-cyan-400 transition mt-4 cursor-pointer"
             >
               <ChevronLeft size={20} className="mr-1" /> Back to Products

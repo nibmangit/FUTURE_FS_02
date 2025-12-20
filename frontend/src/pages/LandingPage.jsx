@@ -97,13 +97,12 @@ const LandingPage = () => {
  
       <section className="py-24 overflow-hidden relative">
         <div className="max-w-7xl mx-auto px-6 mb-16 flex justify-between items-end">
-          <div>
-            <span className="text-[10px] font-black text-cyan-400 uppercase tracking-[0.4em] mb-2 block animate-pulse">Live_Drops</span>
-            <h2 className="text-4xl md:text-6xl font-black tracking-tighter uppercase italic">Featured_Drops</h2>
+          <div> 
+            <h2 className="text-2xl md:text-6xl font-black tracking-tighter uppercase italic">Featured_Products</h2>
           </div>
           <button 
             onClick={() => navigate('/products')}
-            className="group flex items-center gap-2 text-sm font-bold border-b border-cyan-400/30 pb-1 hover:border-cyan-400 transition-all cursor-pointer"
+            className="hidden md:flex group items-center gap-2 text-sm font-bold border-b border-cyan-400/30 pb-1 hover:border-cyan-400 transition-all cursor-pointer"
           >
             VIEW ALL <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
           </button>
@@ -143,7 +142,7 @@ const LandingPage = () => {
       <section className="relative py-32 px-6">
         <div className="max-w-4xl mx-auto text-center space-y-8 bg-white/5 border border-white/10 p-16 rounded-[60px] backdrop-blur-xl relative overflow-hidden group">
          <div className="absolute inset-0 bg-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-           <h2 className="text-5xl md:text-8xl font-black tracking-tighter italic uppercase leading-none transition-transform duration-700 group-hover:scale-[1.02]">
+           <h2 className="text-3xl md:text-7xl font-black tracking-tighter italic uppercase leading-none transition-transform duration-700 group-hover:scale-[1.02]">
             Ready to <br /> Explore?
           </h2>
           <p className="text-gray-400 text-lg max-w-md mx-auto">

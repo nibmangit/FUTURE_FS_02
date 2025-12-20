@@ -47,7 +47,7 @@ function App() {
   }; 
 
   const isAuthOrCheckout = ['/checkout', '/authform'].includes(location.pathname);
-  const knownRoutes = ['/', '/cart', '/checkout', '/confirmation', '/authform', '/orderhistory'];
+  const knownRoutes = ['/','/products', '/cart', '/checkout', '/confirmation', '/authform', '/orderhistory'];
   const isNotFound = !knownRoutes.includes(location.pathname) && !location.pathname.startsWith('/product/');
 
   return (

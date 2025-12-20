@@ -8,7 +8,7 @@ function Navbar({isLoggedIn, handleLogout, userEmail}) {
   const navigate = useNavigate();
   
   return (
-      <header className="sticky top-0 z-100 w-full bg-[#030712]/80 backdrop-blur-xl border-b border-white/10 shadow-2xl">
+      <header className="sticky top-0 z-111 w-full bg-[#030712]/80 backdrop-blur-xl border-b border-white/10 shadow-2xl">
         <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
             <div
               onClick={() => navigate("/")}

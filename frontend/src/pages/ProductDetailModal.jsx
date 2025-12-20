@@ -34,23 +34,16 @@ function ProductDetailModal({ onAddToCart }) {
 
   return (
     <div className="fixed inset-0 z-110 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md">
-      {/* Container: Full width on mobile, rounded/centered on desktop */}
       <div className="bg-gray-900 sm:rounded-2xl shadow-2xl max-w-4xl w-full h-[90vh] sm:h-auto max-h-[95vh] flex flex-col overflow-hidden border-t sm:border border-gray-800 relative transform transition-all">
-        
-        {/* Close Button - Larger touch target for mobile */}
-        <button
+       <button
           onClick={handleClose}
           className="absolute top-3 right-3 sm:top-4 sm:right-4 text-gray-400 hover:text-white transition p-3 sm:p-2 rounded-full bg-gray-900/50 sm:hover:bg-gray-800 z-20"
         >
           <X size={24} />
         </button>
-
-        {/* Scrollable Content Wrapper */}
-        <div className="overflow-y-auto p-5 sm:p-8 md:p-10 custom-scrollbar">
+      <div className="overflow-y-auto p-5 sm:p-8 md:p-10 custom-scrollbar">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-            
-            {/* LEFT: Image - Scaled for mobile viewports */}
-            <div className="rounded-xl overflow-hidden bg-gray-800/50 flex items-center justify-center p-4 min-h-b2.5 sm:min-h-87.85">
+             <div className="rounded-xl overflow-hidden bg-gray-800/50 flex items-center justify-center p-4 min-h-b2.5 sm:min-h-87.85">
               <img
                 src={product.imageUrl}
                 alt={product.name}
@@ -59,23 +52,21 @@ function ProductDetailModal({ onAddToCart }) {
               />
             </div>
 
-            {/* RIGHT: Content */}
-            <div className="flex flex-col text-left h-full">
+             <div className="flex flex-col text-left h-full">
               <span className="text-xs sm:text-sm font-medium text-cyan-400 uppercase tracking-wider mb-2">
                 {product.category}
               </span>
               <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3 leading-tight uppercase italic">
                 {product.name}
               </h2>
-              <p className="text-3xl sm:text-4xl font-extrabold text-white mb-4 sm:mb-6">
+              <p className="text-3xl sm:text-4xl font-extrabold text-cyan-400 mb-4 sm:mb-6">
                 ${product.price.toFixed(2)}
               </p>
               <p className="text-gray-400 text-sm sm:text-base mb-8 leading-relaxed">
                 {product.description}
               </p>
 
-              {/* Bottom Actions - mt-auto keeps them at bottom on large screens */}
-              <div className="mt-auto pt-6 border-t border-gray-800/50">
+               <div className="mt-auto pt-6 border-t border-gray-800/50">
                 <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                   <label htmlFor="quantity" className="text-gray-300 font-bold uppercase text-xs tracking-widest">Quantity</label>
                   <div className="flex items-center border border-gray-700 rounded-full bg-gray-800/30 p-1">
@@ -98,8 +89,7 @@ function ProductDetailModal({ onAddToCart }) {
 
                 <button 
                   onClick={handleAdd}
-                  className="w-full py-4 bg-white text-black hover:bg-cyan-400 font-black text-sm uppercase tracking-widest 
-                    rounded-full shadow-xl transition-all duration-300 active:scale-[0.97] cursor-pointer"
+                  className="w-full mt-6 py-4 bg-cyan-600 hover:bg-cyan-500 cursor-pointe text-white font-bold text-lg rounded-xl shadow-lg transition duration-200 active:scale-[0.98]"
                 >
                   Add to Cart
                 </button>
@@ -109,7 +99,7 @@ function ProductDetailModal({ onAddToCart }) {
                   className="mt-6 w-full flex items-center justify-center text-gray-500 hover:text-white transition group cursor-pointer"
                 >
                   <ArrowLeft size={16} className="mr-2 group-hover:-translate-x-1 transition-transform" /> 
-                  <span className="text-[10px] font-black uppercase tracking-widest">Return Back</span>
+                  <span className="text-[15px] font-black tracking-widest">Return Back</span>
                 </button>
               </div>
             </div>

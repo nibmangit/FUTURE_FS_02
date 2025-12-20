@@ -52,13 +52,13 @@ const LandingPage = () => {
             <div className="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start">
               <button
                 onClick={() => navigate('/products')}
-                className="group px-10 py-5 bg-white text-black font-black rounded-full hover:bg-cyan-400 transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer shadow-lg hover:shadow-cyan-500/20"
+                className="group px-10 py-5 bg-cyan-600 hover:bg-cyan-500 rounded-full transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer shadow-lg hover:shadow-cyan-500/20"
               >
                 SHOP PRODUCTS <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
               <button
                 onClick={() => navigate('/cart')}
-                className="px-10 py-5 bg-transparent border border-white/10 rounded-full hover:bg-white/10 hover:border-white/40 transition-all font-bold backdrop-blur-sm cursor-pointer active:scale-95"
+                className="px-10 py-5 bg-transparent border border-white/10 rounded-full hover:bg-white/10 hover:border-cyan-300 transition-all font-bold backdrop-blur-sm cursor-pointer active:scale-95"
               >
                 VIEW CART
               </button>
@@ -123,7 +123,7 @@ const LandingPage = () => {
                     alt={product.name}
                   />
                   <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-                    <div className="w-full py-3 bg-white text-black text-center font-black rounded-xl text-xs uppercase tracking-widest transform translate-y-4 group-hover:translate-y-0 transition-transform">
+                    <div className="w-full py-3 bg-cyan-600 hover:bg-cyan-500 text-center font-black rounded-xl text-xs tracking-widest transform translate-y-4 group-hover:translate-y-0 transition-transform">
                       View Details
                     </div>
                   </div>
@@ -151,7 +151,7 @@ const LandingPage = () => {
           <div className="pt-6">
             <button
               onClick={() => navigate('/products')}
-              className="px-12 py-6 bg-white text-black font-black rounded-full hover:bg-cyan-400 transition-all uppercase tracking-widest text-xs shadow-2xl active:scale-95 cursor-pointer relative z-10"
+              className="px-12 py-6 bg-cyan-600 hover:bg-cyan-500 font-black rounded-full transition-all uppercase tracking-widest text-xs shadow-2xl active:scale-95 cursor-pointer relative z-10"
             >
               Start Shopping
             </button>

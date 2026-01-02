@@ -46,10 +46,11 @@ function App() {
     navigate('/products');
   }; 
 
+  const isProductDetail = location.pathname.startsWith('/product/');
   const isAuthOrCheckout = ['/checkout', '/authform'].includes(location.pathname);
   const knownRoutes = ['/','/products', '/cart', '/checkout', '/confirmation', '/authform', '/orderhistory'];
   const isNotFound = !knownRoutes.includes(location.pathname) && !location.pathname.startsWith('/product/');
-
+  const shouldHideNavbar = isAuthOrCheckout || isProductDetail;
   return (
     <div className="min-h-screen bg-gray-950 font-sans">
       <style>{`
@@ -57,7 +58,7 @@ function App() {
         html { scroll-behavior: smooth; }
         .font-sans { font-family: 'Inter', sans-serif; }
       `}</style>
-      {!isAuthOrCheckout &&  <Navbar isLoggedIn={isLoggedIn} handleLogout={logout} userEmail={user?.email} /> }
+      {!shouldHideNavbar &&  <Navbar isLoggedIn={isLoggedIn} handleLogout={logout} userEmail={user?.email} /> }
     <main className="grow">
         <Routes>
           <Route path="/" element={<LandingPage />} />

@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     'users',
     'store',
     'orders',
-    'payments'
+    'payments',
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
 MIDDLEWARE = [
@@ -120,3 +122,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+
+# Cloudinary configuration
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dahvdgqbf',
+    'API_KEY': '251625242136878',
+    'API_SECRET': '_gCb5ZqDUkQo2yEEFiKO9VJ386U',
+}

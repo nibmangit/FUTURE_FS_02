@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, generics, status
+from django.db.models import functions, F, Sum, Count, DecimalField, ExpressionWrapper
 from .models import Cart, Product
 from .serializers import *
 
@@ -9,36 +10,78 @@ class ProductListView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny]
-
+ 
 class CartView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        cart, created = Cart.objects.get_or_create(user=request.user)
-        serializer = CartSerializer(cart)
+        cart, _ = Cart.objects.get_or_create(user=request.user)
+        # Optimization to prevent N+1 queries
+        cart_optimized = Cart.objects.prefetch_related('items__product').get(id=cart.id)
+        serializer = CartSerializer(cart_optimized)
         return Response(serializer.data)
-
-class AddToCartView(APIView):
+ 
+class AddOrUpdateCartItemView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     
     def post(self, request):
-        serializer = AddToCartSerializer(data = request.data)
+        serializer = AddToCartSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
-        product_id = serializer.validated_data["product_id"]
+        product = get_object_or_404(Product, id=serializer.validated_data["product_id"])
         quantity = serializer.validated_data["quantity"]
+        cart, _ = Cart.objects.get_or_create(user=request.user)
         
-        product = get_object_or_404(Product, id = product_id)
+        cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
         
-        if quantity > product.stock:
-            return Response({"error":"No enough stock ia available for this product."}, status=status.HTTP_400_BAD_REQUEST)
+        # Logic: If new, use quantity. If exists, add to it.
+        new_total = quantity if created else cart_item.quantity + quantity
         
-        cart, _ = Cart.objects.get_or_create(user = request.user)
-        cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product, defaults={"quantity":quantity})
-        if not created:
-            new_quantity = cart_item.quantity + quantity
-            if new_quantity>product.stock:
-                return Response( {"error": "Total quantity exceeds available stock."}, status=status.HTTP_400_BAD_REQUEST )
-            cart_item.quantity = new_quantity
-            cart_item.save()
-        return Response({"message": "Product added to cart successfully."}, status=status.HTTP_201_CREATED )
+        if new_total > product.stock:
+            return Response({"error": "Insufficient stock"}, status=400)
+        
+        cart_item.quantity = new_total
+        cart_item.save()
+        
+        # Return the FULL updated cart so the frontend UI updates immediately
+        updated_cart = Cart.objects.prefetch_related('items__product').get(id=cart.id)
+        return Response(CartSerializer(updated_cart).data)
+
+    def put(self, request):
+        serializer = AddToCartSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        product_id = serializer.validated_data['product_id']
+        quantity_change = serializer.validated_data['quantity']
+        action = request.data.get("action", "increment") 
+
+        cart = Cart.objects.get(user=request.user)
+        cart_item = get_object_or_404(CartItem, cart=cart, product_id=product_id)
+
+        if action == "increment":
+            cart_item.quantity += quantity_change
+        elif action == "decrement":
+            cart_item.quantity = max(1, cart_item.quantity - quantity_change)
+        elif action == "set":
+            cart_item.quantity = quantity_change
+
+        if cart_item.quantity > cart_item.product.stock:
+            return Response({"error": "Exceeds stock"}, status=400)
+
+        cart_item.save()
+        
+        # Again, return the full cart
+        updated_cart = Cart.objects.prefetch_related('items__product').get(id=cart.id)
+        return Response(CartSerializer(updated_cart).data)
+    
+class RemoveCartItemView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def delete(self, request, product_id):
+        cart, _ = Cart.objects.get_or_create(user=request.user)
+        cart_item = get_object_or_404(CartItem, cart = cart, product__id = product_id)
+        
+        cart_item.delete()
+        updated_cart = Cart.objects.prefetch_related('items__product').get(id=cart.id)
+        return Response(CartSerializer(updated_cart).data)
+    

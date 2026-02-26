@@ -4,5 +4,6 @@ from .views import *
 urlpatterns = [
     path("cart/", CartView.as_view(), name="cart"),
     path("products/", ProductListView.as_view(), name="products"),
-    path("cart/add/", AddToCartView.as_view(), name="add-to-cart"),
+    path("cart/add/", AddOrUpdateCartItemView.as_view(), name="dd-or-update-cart-item"),
+    path("cart/remove/<uuid:product_id>/", RemoveCartItemView.as_view(), name="remove-cart-item"),
 ]

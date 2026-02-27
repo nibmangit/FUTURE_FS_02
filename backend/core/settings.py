@@ -151,3 +151,10 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
+
+#Chapa integration
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+CHAPA_SECRET_KEY = os.getenv('CHAPA_SECRET_KEY')

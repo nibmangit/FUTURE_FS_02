@@ -2,16 +2,38 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status, permissions
+from rest_framework import status, permissions, generics
+from rest_framework import generics 
 from store.models import Cart
-from .models import Order, OrderItem
-from .serializers import OrderSerializer 
+from .models import *
+from .serializers import * 
+
+class ShippingAddressViewSet(generics.RetrieveUpdateAPIView):
+    serializer_class = ShippingAddressSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        # This always returns the ONE address for the logged-in user
+        # If it doesn't exist, it creates a blank one so the frontend has a form to fill
+        address, created = ShippingAddress.objects.get_or_create(user=self.request.user)
+        return address
 
 class CheckoutView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
         user = request.user
+        
+        data = request.data 
+        shipping_address, created = ShippingAddress.objects.get_or_create(user=user)
+        
+        shipping_address.full_name = data.get('full_name', shipping_address.full_name)
+        shipping_address.phone_number = data.get('phone_number', shipping_address.phone_number)
+        shipping_address.city = data.get('city', shipping_address.city)
+        shipping_address.district = data.get('district', shipping_address.district)
+        shipping_address.specific_address = data.get('specific_address', shipping_address.specific_address)
+        shipping_address.save()
+        
         # 1. Get the cart and its items
         cart = get_object_or_404(Cart, user=user)
         cart_items = cart.items.select_related('product').all()
@@ -23,7 +45,8 @@ class CheckoutView(APIView):
             # 2. Create the Order object
             order = Order.objects.create(
                 user=user,
-                total_price=cart.total_price # uses the property we built earlier
+                total_price=cart.total_price ,# uses the property we built earlier
+                shipping_address=shipping_address
             )
 
             # 3. Move items from Cart to Order & Update Stock
@@ -49,13 +72,10 @@ class CheckoutView(APIView):
             return Response({
                 "message": "Order created successfully",
                 "order_id": order.id,
-                "total_price": order.total_price
+                "total_price": order.total_price,
+                "shipping_to": shipping_address.city
             }, status=status.HTTP_201_CREATED)
-            
-from rest_framework import generics
-from .models import Order
-from .serializers import OrderSerializer
-
+        
 class OrderHistoryView(generics.ListAPIView):
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]

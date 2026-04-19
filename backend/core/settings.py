@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -133,9 +136,9 @@ STATIC_URL = 'static/'
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'dahvdgqbf',
-    'API_KEY': '251625242136878',
-    'API_SECRET': '_gCb5ZqDUkQo2yEEFiKO9VJ386U',
+    'CLOUD_NAME': os.getenv("CLOUD_NAME"),
+    'API_KEY': os.getenv("CLOUD_API_KEY"),
+    'API_SECRET': os.getenv("CLOUD_API_SECRET"),
 }
 
 #Authentication with rest framework simple jwt
@@ -156,9 +159,5 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
-#Chapa integration
-import os
-from dotenv import load_dotenv
-load_dotenv()
-
+#Chapa integration  
 CHAPA_SECRET_KEY = os.getenv('CHAPA_SECRET_KEY')

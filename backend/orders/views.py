@@ -25,7 +25,7 @@ class CheckoutView(APIView):
         user = request.user
         
         data = request.data 
-        shipping_address, created = ShippingAddress.objects.get_or_create(user=user)
+        shipping_address, _ = ShippingAddress.objects.get_or_create(user=user)
         
         shipping_address.full_name = data.get('full_name', shipping_address.full_name)
         shipping_address.phone_number = data.get('phone_number', shipping_address.phone_number)
@@ -34,7 +34,7 @@ class CheckoutView(APIView):
         shipping_address.specific_address = data.get('specific_address', shipping_address.specific_address)
         shipping_address.save()
         
-        # 1. Get the cart and its items
+        # 1. Get cart
         cart = get_object_or_404(Cart, user=user)
         cart_items = cart.items.select_related('product').all()
 
@@ -42,16 +42,16 @@ class CheckoutView(APIView):
             return Response({"error": "Cart is empty"}, status=status.HTTP_400_BAD_REQUEST)
 
         with transaction.atomic():
-            # 2. Create the Order object
+            # 2. Create Order
             order = Order.objects.create(
                 user=user,
-                total_price=cart.total_price ,# uses the property we built earlier
-                shipping_address=shipping_address
+                total_price=cart.total_price,
+                shipping_address=shipping_address,
+                status="pending"
             )
 
-            # 3. Move items from Cart to Order & Update Stock
+            # 3. Move items (NO stock reduction here anymore)
             for item in cart_items:
-                # Check stock one last time
                 if item.product.stock < item.quantity:
                     raise Exception(f"Not enough stock for {item.product.title}")
 
@@ -59,21 +59,14 @@ class CheckoutView(APIView):
                     order=order,
                     product=item.product,
                     quantity=item.quantity,
-                    price_at_purchase=item.product.price # Locking in the price
+                    price_at_purchase=item.product.price
                 )
-
-                # Reduce product stock
-                item.product.stock -= item.quantity
-                item.product.save()
-
-            # 4. Clear the Cart
-            cart_items.delete()
 
             return Response({
                 "message": "Order created successfully",
                 "order_id": order.id,
                 "total_price": order.total_price,
-                "shipping_to": shipping_address.city
+                "status": order.status
             }, status=status.HTTP_201_CREATED)
         
 class OrderHistoryView(generics.ListAPIView):

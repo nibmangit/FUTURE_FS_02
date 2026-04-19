@@ -1,0 +1,22 @@
+# Environments
+venv/
+env/
+.env
+
+# Databases
+db.sqlite3
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Media and Static
+/media/
+/static/
+!/static/admin/
+
+# Project specific docs you want to keep local
+endpoint.md
+
+# OS files
+.DS_Store

@@ -7,8 +7,9 @@ from rest_framework import status, permissions
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator 
-from orders.models import Order
+from orders.models import Order, ShippingAddress
 from .models import Payment
+from store.models import Cart
 
 class InitializePaymentView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -17,19 +18,24 @@ class InitializePaymentView(APIView):
         order_id = request.data.get('order_id')
         order = get_object_or_404(Order, id=order_id, user=request.user)
 
-        # 1. Create a unique transaction reference
-        tx_ref = f"tx-{order.id}-{uuid.uuid4().hex[:6]}"
+        # ❗ Prevent paying already paid order
+        if order.status == "paid":
+            return Response({"error": "Order already paid"}, status=400)
 
-        # 2. Prepare Chapa Payload
-        # 'callback_url' is where Chapa sends the Webhook (Server-to-Server)
-        # 'return_url' is where the user is redirected after paying (Browser)
+        # ❗ Prevent duplicate payment
+        if hasattr(order, 'payment'):
+            return Response({"error": "Payment already initiated"}, status=400)
+
+        tx_ref = f"tx-{order.id}-{uuid.uuid4().hex[:6]}"
+        address = ShippingAddress.objects.get(user=request.user)
+
         payload = {
             "amount": str(order.total_price),
             "currency": "ETB",
             "email": request.user.email,
-            "first_name": request.user.username,
+            "first_name": address.full_name,
             "tx_ref": tx_ref,
-            "callback_url": "https://mydomain.com/api/payments/webhook/",
+            "callback_url": "https://nonelucidating-jenna-postoperative.ngrok-free.dev/api/payments/webhook/",
             "return_url": "http://localhost:3000/payment-success/", 
             "customization": {
                 "title": "Mini Store",
@@ -42,7 +48,6 @@ class InitializePaymentView(APIView):
             "Content-Type": "application/json"
         }
 
-        # 3. Call Chapa API
         try:
             response = requests.post(
                 "https://api.chapa.co/v1/transaction/initialize",
@@ -52,7 +57,6 @@ class InitializePaymentView(APIView):
             res_data = response.json() 
 
             if res_data['status'] == 'success':
-                # 4. Create local Payment record
                 Payment.objects.create(
                     order=order,
                     tx_ref=tx_ref,
@@ -60,7 +64,6 @@ class InitializePaymentView(APIView):
                     status="pending"
                 )
                 
-                # Send the checkout URL to the frontend
                 return Response({
                     "checkout_url": res_data['data']['checkout_url'],
                     "tx_ref": tx_ref
@@ -69,34 +72,53 @@ class InitializePaymentView(APIView):
                 return Response({"error": "Chapa initialization failed"}, status=400)
 
         except Exception as e: 
-            return Response({"error": str(e)}, status=500)
-        
+            return Response({"error": str(e)}, status=500)      
 
 @method_decorator(csrf_exempt, name='dispatch')
 class ChapaWebhookView(APIView):
-    permission_classes = [permissions.AllowAny] # Chapa needs to be able to access this
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        # 1. Chapa sends data in the body
         data = request.data
         
-        # 2. Find the payment record using the tx_ref Chapa sends back
         tx_ref = data.get('tx_ref')
         payment = get_object_or_404(Payment, tx_ref=tx_ref)
         order = payment.order
 
-        # 3. Update based on Chapa's response
+        # Prevent duplicate processing
+        if payment.status == "success":
+            return Response({"message": "Already processed"}, status=200)
+
         if data.get('status') == 'success':
             payment.status = 'success'
             payment.gateway_response = data
             payment.save()
 
-            # Update the Order to Paid
+            # Update order
             order.status = 'paid'
             order.save()
-            
-            return Response({"status": "Payment successful and order updated"}, status=200)
+
+            # Reduce stock
+            for item in order.items.all():
+                product = item.product
+                product.stock -= item.quantity
+                product.save()
+
+            # Clear cart AFTER successful payment
+            try:
+                cart = Cart.objects.get(user=order.user)
+                cart.items.all().delete()
+            except Cart.DoesNotExist:
+                pass
+
+            return Response({"status": "Payment successful and order completed"}, status=200)
+
         else:
             payment.status = 'failed'
+            payment.gateway_response = data
             payment.save()
+
+            order.status = 'failed'
+            order.save()
+
             return Response({"status": "Payment failed"}, status=200)

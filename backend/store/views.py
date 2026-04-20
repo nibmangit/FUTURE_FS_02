@@ -10,6 +10,12 @@ class ProductListView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny]
+    
+class ProductDetailView(generics.RetrieveAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.AllowAny]
+    lookup_field = 'id'
  
 class CartView(APIView):
     permission_classes = [permissions.IsAuthenticated]

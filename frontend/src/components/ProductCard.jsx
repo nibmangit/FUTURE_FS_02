@@ -31,7 +31,7 @@ function ProductCard({product}) {
                 {product.name}
             </h3>
         <div className="flex items-center justify-between mt-auto pt-2">
-            <span className="text-2xl font-bold text-white">${product.price.toFixed(2)}</span>
+            <span className="text-2xl font-bold text-white">${product.price}</span>
                 <button 
                 onClick={handleNavigate}
                 className={`px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-medium rounded-lg 

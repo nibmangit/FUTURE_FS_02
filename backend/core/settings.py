@@ -41,8 +41,8 @@ INSTALLED_APPS = [
     'store',
     'orders',
     'payments',
-    'cloudinary',
     'cloudinary_storage',
+    'cloudinary',
     'rest_framework',
     'corsheaders',
 ]
@@ -146,15 +146,6 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 
-# Cloudinary configuration
-
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.getenv("CLOUD_NAME"),
-    'API_KEY': os.getenv("CLOUD_API_KEY"),
-    'API_SECRET': os.getenv("CLOUD_API_SECRET"),
-}
-
 #Authentication with rest framework simple jwt
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -175,3 +166,13 @@ SIMPLE_JWT = {
 
 #Chapa integration  
 CHAPA_SECRET_KEY = os.getenv('CHAPA_SECRET_KEY')
+
+
+# Cloudinary configuration
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv("CLOUD_NAME"),
+    'API_KEY': os.getenv("CLOUD_API_KEY"),
+    'API_SECRET': os.getenv("CLOUD_API_SECRET"),
+}

@@ -19,4 +19,4 @@ __pycache__/
 endpoint.md
 
 # OS files
-.DS_Store
+.DS_Store.env

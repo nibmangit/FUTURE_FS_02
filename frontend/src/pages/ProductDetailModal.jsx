@@ -110,8 +110,9 @@ function ProductDetailModal({ onAddToCart }) {
               <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3 leading-tight uppercase italic">
                 {product.name}
               </h2>
-              <p className="text-3xl sm:text-4xl font-extrabold text-cyan-400 mb-4 sm:mb-6">
-                ${product.price}
+              <p className="text-3xl sm:text-4xl font-black text-cyan-400 mb-4 sm:mb-6 tabular-nums">
+                {product.price.toLocaleString()} 
+                <span className="text-lg sm:text-xl font-bold ml-2 opacity-80">ETB</span>
               </p>
               <p className="text-gray-400 text-sm sm:text-base mb-8 leading-relaxed">
                 {product.description}

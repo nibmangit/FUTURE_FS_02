@@ -1,17 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import InputField from "../components/InputField";
 import { useCartContext } from "../hooks/useCartContext";
 import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
 import useCheckout from "../hooks/useCheckout";
+import orderService from "../api/orderService";
 
 function CheckoutForm() {
   const { cartTotal } = useCartContext();
   const navigate = useNavigate();
 
   const { startCheckout, loading, error } = useCheckout();
-
-  // ✅ Backend-aligned form
+ 
   const [formData, setFormData] = useState({
     full_name: "",
     phone_number: "",
@@ -22,8 +22,28 @@ function CheckoutForm() {
 
   const [errors, setErrors] = useState({});
   const safeTotal = Number(cartTotal || 0).toFixed(2);
+  
+  // PREFILL ADDRESS (GET) 
+  useEffect(() => {
+    const loadAddress = async () => {
+      try {
+        const data = await orderService.getAddress();
 
-  // ✅ VALIDATION (only backend fields)
+        setFormData({
+          full_name: data.full_name || "",
+          phone_number: data.phone_number || "",
+          city: data.city || "",
+          district: data.district || "",
+          specific_address: data.specific_address || ""
+        });
+      } catch (err) {
+        console.error("Failed to load address:", err);
+      }
+    };
+
+    loadAddress();
+  }, []);
+
   const validate = () => {
     const newErrors = {};
 
@@ -37,13 +57,21 @@ function CheckoutForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // ✅ REAL SUBMIT (backend flow)
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
-    await startCheckout(formData);
+    try {
+      // Save / update address
+      await orderService.updateAddress(formData);
+
+      // Proceed to checkout + payment
+      await startCheckout(formData);
+    } catch (err) {
+      console.error("Checkout error:", err);
+    }
   };
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -131,7 +159,7 @@ function CheckoutForm() {
             <div className="pt-6">
               <div className="flex items-center justify-between mb-6 p-4 bg-cyan-500/5 rounded-xl border border-cyan-500/20">
                 <span className="text-gray-400">Total to Pay:</span>
-                <span className="text-3xl font-extrabold text-white">${safeTotal}</span>
+                <span className="text-3xl font-extrabold text-white">{safeTotal} ETB</span>
               </div>
 
               {/* ERROR */}

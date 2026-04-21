@@ -37,8 +37,8 @@ function CardItem({ item }) {
             {product.title}
           </h3>
 
-          <p className="text-cyan-400 font-medium sm:hidden">
-            ${product.price} each
+          <p className="text-cyan-400 font-medium text-sm">
+            {Number(product.price).toLocaleString()} ETB <span className="text-gray-500 text-xs font-normal">/ unit</span>
           </p>
 
           <span className="text-xs text-gray-500">
@@ -87,8 +87,9 @@ function CardItem({ item }) {
             Total
           </span>
 
-          <div className="font-bold text-lg text-white">
-            ${(product.price * item.quantity).toFixed(2)}
+          <div className="font-bold text-lg text-white whitespace-nowrap tabular-nums">
+            {(product.price * item.quantity).toLocaleString()} 
+            <span className="text-xs text-cyan-500 ml-1">ETB</span>
           </div>
         </div>
 

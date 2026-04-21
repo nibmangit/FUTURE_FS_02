@@ -2,61 +2,47 @@ import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import InputField from "../components/InputField";
 import { useCartContext } from "../hooks/useCartContext";
-import { ArrowLeft, Loader2, ShieldCheck, CreditCard, Landmark } from "lucide-react";
-import { saveOrderToHistory } from "../components/GetOrSaveOrderHistory";
+import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
+import useCheckout from "../hooks/useCheckout";
 
-function CheckoutForm({ userEmail, setConfirmationId }) {
-  const { cartItems, cartTotal, clearCart } = useCartContext();
+function CheckoutForm() {
+  const { cartTotal } = useCartContext();
   const navigate = useNavigate();
-   
-  const [paymentMethod, setPaymentMethod] = useState("creditCard");
-  const [formData, setFormData] = useState({ 
-    fullName: "", 
-    email: userEmail || "", 
-    address: "", 
-    cardNumber: "",
-    expiry: "",
-    cvv: "", 
-    accountName: "",
-    accountNumber: ""
+
+  const { startCheckout, loading, error } = useCheckout();
+
+  // ✅ Backend-aligned form
+  const [formData, setFormData] = useState({
+    full_name: "",
+    phone_number: "",
+    city: "",
+    district: "",
+    specific_address: ""
   });
-  
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [errors, setErrors] = useState({});
   const safeTotal = Number(cartTotal || 0).toFixed(2);
 
+  // ✅ VALIDATION (only backend fields)
   const validate = () => {
-    const newErrors = {}; 
-    if (!formData.fullName.trim()) newErrors.fullName = "Full Name is required";
-    if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email))
-      newErrors.email = "Valid Email is required";
-    if (!formData.address.trim()) newErrors.address = "Shipping Address is required";
- 
-    if (paymentMethod === "creditCard") {
-      if (!formData.cardNumber) newErrors.cardNumber = "Card Number is required";
-      if (!formData.expiry) newErrors.expiry = "Required";
-      if (!formData.cvv) newErrors.cvv = "Required";
-    } else {
-      if (!formData.accountName) newErrors.accountName = "Account Name is required";
-      if (!formData.accountNumber) newErrors.accountNumber = "Account Number is required";
-    }
+    const newErrors = {};
+
+    if (!formData.full_name.trim()) newErrors.full_name = "Full Name is required";
+    if (!formData.phone_number.trim()) newErrors.phone_number = "Phone number is required";
+    if (!formData.city.trim()) newErrors.city = "City is required";
+    if (!formData.district.trim()) newErrors.district = "District is required";
+    if (!formData.specific_address.trim()) newErrors.specific_address = "Address is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  // ✅ REAL SUBMIT (backend flow)
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validate()) {
-      setIsSubmitting(true);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      
-      const orderId = saveOrderToHistory(cartItems, cartTotal, userEmail);
-      setConfirmationId(orderId);
-      setIsSubmitting(false);
-      clearCart();
-      navigate('/confirmation');
-    }
+    if (!validate()) return;
+
+    await startCheckout(formData);
   };
 
   const handleChange = (e) => {
@@ -66,7 +52,8 @@ function CheckoutForm({ userEmail, setConfirmationId }) {
   return (
     <div className="min-h-screen bg-gray-950 py-12 px-4 sm:px-6 lg:px-8">
       <main className="max-w-xl mx-auto">
-        
+
+        {/* BACK BUTTON */}
         <button 
           onClick={() => navigate(-1)}
           className="flex items-center text-gray-400 hover:text-cyan-400 transition mb-6 group cursor-pointer"
@@ -82,107 +69,88 @@ function CheckoutForm({ userEmail, setConfirmationId }) {
             <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
               Checkout
             </h1>
-            <p className="text-gray-400 mt-2">Enter your shipping and payment info.</p>
+            <p className="text-gray-400 mt-2">Enter your shipping details.</p>
           </header>
 
           <form onSubmit={handleSubmit} className="relative z-10 space-y-6"> 
+            
+            {/* SHIPPING */}
             <div className="space-y-4">
               <h2 className="text-lg font-semibold text-gray-200 flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 text-xs flex items-center justify-center">1</span>
                 Shipping Details
               </h2>
+
               <InputField
-                formData={formData} handleChange={handleChange}
-                label="Email Address" name="email" type="email"
-                error={errors.email} placeholder="nibman@example.com"
+                formData={formData}
+                handleChange={handleChange}
+                label="Full Name"
+                name="full_name"
+                error={errors.full_name}
+                placeholder="John Doe"
               />
+
               <InputField
-                formData={formData} handleChange={handleChange}
-                label="Full Name" name="fullName"
-                error={errors.fullName} placeholder="Nib Man"
-              /> 
+                formData={formData}
+                handleChange={handleChange}
+                label="Phone Number"
+                name="phone_number"
+                error={errors.phone_number}
+                placeholder="0912345678"
+              />
+
               <InputField
-                formData={formData} handleChange={handleChange}
-                label="Shipping Address" name="address"
-                error={errors.address} placeholder="04 Poly, Bahir Dar"
+                formData={formData}
+                handleChange={handleChange}
+                label="City"
+                name="city"
+                error={errors.city}
+                placeholder="Addis Ababa"
+              />
+
+              <InputField
+                formData={formData}
+                handleChange={handleChange}
+                label="District"
+                name="district"
+                error={errors.district}
+                placeholder="Bole"
+              />
+
+              <InputField
+                formData={formData}
+                handleChange={handleChange}
+                label="Specific Address"
+                name="specific_address"
+                error={errors.specific_address}
+                placeholder="Near XYZ building"
               />
             </div>
- 
-            <div className="space-y-4 pt-4 border-t border-gray-800">
-              <h2 className="text-lg font-semibold text-gray-200 flex items-center gap-2">
-                <span className="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 text-xs flex items-center justify-center">2</span>
-                Payment Method
-              </h2>
-              
-              <div className="flex p-1 bg-gray-800 rounded-xl">
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod("creditCard")}
-                  className={`flex-1 py-3 flex items-center justify-center gap-2 text-sm font-bold rounded-lg transition-all ${
-                    paymentMethod === "creditCard" ? "bg-cyan-600 text-white shadow-lg" : "text-gray-400 hover:text-white"
-                  }`}
-                >
-                  <CreditCard size={18} /> Credit Card
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod("bank")}
-                  className={`flex-1 py-3 flex items-center justify-center gap-2 text-sm font-bold rounded-lg transition-all ${
-                    paymentMethod === "bank" ? "bg-cyan-600 text-white shadow-lg" : "text-gray-400 hover:text-white"
-                  }`}
-                >
-                  <Landmark size={18} /> Bank Transfer
-                </button>
-              </div>
- 
-              <div className="mt-4 p-4 bg-gray-800/30 rounded-xl border border-gray-800 space-y-4 transition-all duration-300">
-                {paymentMethod === "creditCard" ? (
-                  <>
-                    <InputField
-                      label="Card Number" name="cardNumber" error={errors.cardNumber}
-                      formData={formData} handleChange={handleChange} placeholder="0000 0000 0000 0000"
-                    />
-                    <div className="grid grid-cols-2 gap-4">
-                      <InputField
-                        label="Expiry" name="expiry" error={errors.expiry}
-                        formData={formData} handleChange={handleChange} placeholder="MM/YY"
-                      />
-                      <InputField
-                        label="CVV" name="cvv" error={errors.cvv}
-                        formData={formData} handleChange={handleChange} placeholder="123"
-                      />
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <InputField
-                      label="Account Owner Name" name="accountName" error={errors.accountName}
-                      formData={formData} handleChange={handleChange} placeholder="Nib Man"
-                    />
-                    <InputField
-                      label="Account Number" name="accountNumber" error={errors.accountNumber}
-                      formData={formData} handleChange={handleChange} placeholder="1000 232 43...."
-                    />
-                  </>
-                )}
-              </div>
-            </div>
- 
+
+            {/* TOTAL */}
             <div className="pt-6">
               <div className="flex items-center justify-between mb-6 p-4 bg-cyan-500/5 rounded-xl border border-cyan-500/20">
                 <span className="text-gray-400">Total to Pay:</span>
                 <span className="text-3xl font-extrabold text-white">${safeTotal}</span>
               </div>
 
+              {/* ERROR */}
+              {error && (
+                <p className="text-red-500 text-sm text-center mb-3">
+                  {error}
+                </p>
+              )}
+
+              {/* BUTTON */}
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={loading}
                 className="w-full py-4 bg-cyan-600 hover:bg-cyan-500 cursor-pointer text-white font-bold text-lg rounded-xl shadow-lg shadow-cyan-900/40 transition-all duration-200 active:scale-[0.98] disabled:bg-gray-700 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                {isSubmitting ? (
+                {loading ? (
                   <>
                     <Loader2 className="h-5 w-5 animate-spin" />
-                    <span>Processing...</span>
+                    <span>Redirecting...</span>
                   </>
                 ) : (
                   <>
@@ -192,6 +160,7 @@ function CheckoutForm({ userEmail, setConfirmationId }) {
                 )}
               </button>
             </div>
+
           </form> 
         </div>
       </main>

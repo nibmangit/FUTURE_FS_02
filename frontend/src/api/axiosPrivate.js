@@ -33,8 +33,14 @@ apiPrivate.interceptors.response.use(
 
       try {
         const refreshToken = localStorage.getItem("refreshToken");
-         
-        const response = await axios.post(BASE_URL,"/users/refresh/", {
+
+         if (!refreshToken) {
+          console.warn("No refresh token found in storage.");
+          localStorage.clear();
+          window.location.href = "/login";
+          return Promise.reject(error);
+        }
+        const response = await axios.post("http://127.0.0.1:8000/api/users/refresh/", {
           refresh: refreshToken,
         });
 

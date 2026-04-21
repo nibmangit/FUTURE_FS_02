@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     localStorage.clear();
-    window.location.href = "/login";
+    window.location.href = "/authform";
   };
 
   return (

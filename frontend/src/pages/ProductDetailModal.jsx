@@ -121,7 +121,7 @@ function ProductDetailModal({ onAddToCart }) {
                           setQuantity(q => q + 1);
                         }
                       }}
-                      disabled={quantity >= product.stock}
+                      disabled={quantity >= product.stock || product.stock === 0}
                       className="p-2 text-gray-300 hover:text-cyan-400 transition cursor-pointer"
                     >
                       <Plus size={18} />
@@ -132,9 +132,13 @@ function ProductDetailModal({ onAddToCart }) {
                 <button 
                   onClick={handleAdd}
                   disabled={product.stock === 0}
-                  className="w-full mt-6 py-4 bg-cyan-600 hover:bg-cyan-500 cursor-pointe text-white font-bold text-lg rounded-xl shadow-lg transition duration-200 active:scale-[0.98]"
+                  className={`w-full mt-6 py-4 font-bold text-lg rounded-xl shadow-lg transition duration-200 active:scale-[0.98] 
+                    ${product.stock === 0 
+                      ? "bg-gray-700 text-gray-400 cursor-not-allowed" 
+                      : "bg-cyan-600 hover:bg-cyan-500 text-white cursor-pointer"
+                    }`}
                 >
-                  Add to Cart
+                  {product.stock === 0 ? "OUT OF STOCK" : "ADD TO CART"}
                 </button>
 
                 <button 

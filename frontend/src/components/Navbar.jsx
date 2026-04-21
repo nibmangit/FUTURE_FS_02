@@ -54,6 +54,19 @@ function Navbar({isLoggedIn, handleLogout, userEmail}) {
                   >
                     <LogOut size={20} />
                   </button>
+
+                  <button 
+                    onClick={()=>{navigate("/cart")}}
+                    className="relative text-gray-400 hover:text-cyan-400 transition cursor-pointer"
+                    title='Cart'
+                  >
+                    <ShoppingBag size={24} />
+                    {cartItemCount > 0 && (
+                      <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-cyan-500 text-xs font-bold text-white">
+                        {cartItemCount}
+                      </span>
+                    )}
+                  </button>
                 </>
               ) : (
                 <button
@@ -65,18 +78,6 @@ function Navbar({isLoggedIn, handleLogout, userEmail}) {
                 <span className="hidden md:inline">Login / Sign Up</span>
               </button>
               )}
-              <button 
-                onClick={()=>{navigate("/cart")}}
-                className="relative text-gray-400 hover:text-cyan-400 transition cursor-pointer"
-                title='Cart'
-              >
-                <ShoppingBag size={24} />
-                {cartItemCount > 0 && (
-                  <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-cyan-500 text-xs font-bold text-white">
-                    {cartItemCount}
-                  </span>
-                )}
-              </button>
             </nav>
           </div>
         </header>

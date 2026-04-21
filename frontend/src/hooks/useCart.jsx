@@ -1,67 +1,77 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import {STORAGE_KEY} from '../data/getKey'
+import { useCallback, useEffect, useState, useMemo } from "react";
+import cartService from "../api/cartService";
+import { useAuth } from "../hooks/useAuth"; 
 
-const useCart = () => { 
-  const getInitialCart = () => {
+const useCart = () => {
+  const [cart, setCart] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const {user }= useAuth()
+
+  // 1. FETCH CART
+  const fetchCart = useCallback(async () => {
     try {
-      const storedCart = localStorage.getItem(STORAGE_KEY);
-      return storedCart ? JSON.parse(storedCart) : [];
-    } catch (e) {
-      console.error("Error parsing cart from localStorage:", e);
-      return [];
+      setLoading(true);
+      const data = await cartService.getCart();
+      setCart(data);
+    } catch (err) {
+      console.error("Fetch cart error:", err);
+    } finally {
+      setLoading(false);
     }
-  };
+  }, []);
 
-  const [cartItems, setCartItems] = useState(getInitialCart);
- 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(cartItems));
-    } catch (e) {
-      console.error("Error saving cart to localStorage:", e);
-    }
-  }, [cartItems]);
+  if (user) {
+    fetchCart();
+  }
+}, [user, fetchCart]);
 
-  const updateCartItem = useCallback((productId, productDetails, quantityChange) => {
-    setCartItems(prevItems => {
-      const existingIndex = prevItems.findIndex(item => item.id === productId);
-      const existingItem = existingIndex > -1 ? prevItems[existingIndex] : { quantity: 0 };
-      const newQuantity = existingItem.quantity + quantityChange;
-
-      if (newQuantity <= 0) {
-        
-        return prevItems.filter(item => item.id !== productId);
-      } else {
-        const newItem = {
-          ...productDetails,
-          id: productId,
-          quantity: newQuantity,
-        };
-
-        if (existingIndex > -1) { 
-          return prevItems.map((item, index) =>
-            index === existingIndex ? newItem : item
-          );
-        } else { 
-          return [...prevItems, newItem];
-        }
-      }
-    });
+  // 2. ADD TO CART
+  const updateCartItem = useCallback(async (productId, quantity) => {
+    const data = await cartService.addToCart(productId, quantity);
+    setCart(data);
   }, []);
 
+  // 3. UPDATE QUANTITY
+  const updateQuantity = useCallback(async (productId, quantity, action) => {
+    const data = await cartService.updateCart(productId, quantity, action);
+    setCart(data);
+  }, []);
+
+  // 4. REMOVE ITEM
+  const removeItem = useCallback(async (productId) => {
+    const data = await cartService.removeItem(productId);
+    setCart(data);
+  }, []);
+
+  // 5. CLEAR (frontend only reset)
   const clearCart = useCallback(() => {
-    setCartItems([]);
+    setCart(null);
   }, []);
+
+  // 6. DERIVED VALUES (NO LOGIC, ONLY READ)
+  const cartItems = cart?.items || [];
 
   const cartTotal = useMemo(() => {
-    return cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0).toFixed(2);
-  }, [cartItems]);
+    return cart?.total_price || "0.00";
+  }, [cart]);
 
   const cartItemCount = useMemo(() => {
-    return cartItems.reduce((acc, item) => acc + item.quantity, 0);
-  }, [cartItems]);
+    return cart?.total_quantity || 0;
+  }, [cart]);
 
-  return { cartItems, cartTotal, cartItemCount, updateCartItem, clearCart, isLoading: false };
+  return {
+    cart,
+    cartItems,
+    cartTotal,
+    cartItemCount,
+    updateCartItem,
+    updateQuantity,
+    removeItem,
+    clearCart,
+    fetchCart,
+    loading,
+  };
 };
 
 export default useCart;

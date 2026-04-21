@@ -60,6 +60,11 @@ const useCart = () => {
     return cart?.total_quantity || 0;
   }, [cart]);
 
+  const getItemQuantity = useCallback((productId) => {
+  const item = cartItems.find(item => item.product.id === productId);
+  return item ? item.quantity : 0;
+  }, [cartItems]);
+
   return {
     cart,
     cartItems,
@@ -71,6 +76,7 @@ const useCart = () => {
     clearCart,
     fetchCart,
     loading,
+    getItemQuantity,
   };
 };
 

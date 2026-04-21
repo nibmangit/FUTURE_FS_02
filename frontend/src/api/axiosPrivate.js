@@ -37,7 +37,7 @@ apiPrivate.interceptors.response.use(
          if (!refreshToken) {
           console.warn("No refresh token found in storage.");
           localStorage.clear();
-          window.location.href = "/login";
+          window.location.href = "/authform";
           return Promise.reject(error);
         }
         const response = await axios.post("http://127.0.0.1:8000/api/users/refresh/", {
@@ -56,7 +56,7 @@ apiPrivate.interceptors.response.use(
       } catch (refreshError) { 
         console.error("Refresh token expired. Logging out.");
         localStorage.clear();
-        window.location.href = "/login";
+        window.location.href = "/authform";
         return Promise.reject(refreshError);
       }
     }

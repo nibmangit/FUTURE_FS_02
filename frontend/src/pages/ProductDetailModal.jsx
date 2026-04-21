@@ -3,15 +3,20 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import LoadingScreen from "./LoadingScreen";
 import productService from "../api/productService";
+import {useCartContext} from "../hooks/useCartContext"
 
 function ProductDetailModal({ onAddToCart }) {
   const { id } = useParams();
   const navigate = useNavigate(); 
+  const { getItemQuantity } = useCartContext();
   
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [error, setError] = useState(null);
+
+  const quantityInCart = getItemQuantity(id); 
+  const availableToBuy = product ? product.stock - quantityInCart : 0;
 
   const handleClose = () => navigate('/products');
 
@@ -32,6 +37,12 @@ function ProductDetailModal({ onAddToCart }) {
         };
 
         setProduct(formatted);
+
+        if (data.stock - quantityInCart <= 0) {
+          setQuantity(0);
+        } else {
+          setQuantity(1);
+        }
       } catch (err) {
         console.error(err);
         setError("Product not found");
@@ -41,7 +52,17 @@ function ProductDetailModal({ onAddToCart }) {
     };
 
     fetchProduct();
-  }, [id]);
+  }, [id, quantityInCart]);
+
+  useEffect(() => {
+    if (availableToBuy <= 0) {
+      setQuantity(0);
+    } else if (quantity > availableToBuy) {
+      setQuantity(availableToBuy);
+    } else if (quantity === 0 && availableToBuy > 0) {
+      setQuantity(1);
+    }
+  }, [availableToBuy, quantity]);
 
   const handleAdd = () => {
     if (product) {
@@ -101,6 +122,11 @@ function ProductDetailModal({ onAddToCart }) {
                 <span className={product.stock > 0 ? "text-green-400" : "text-red-400"}>
                   {product.stock > 0 ? product.stock : "Out of stock"}
                 </span>
+                {quantityInCart > 0 && (
+                  <span className="ml-2 italic text-gray-400 text-xs">
+                    ({quantityInCart} already in cart)
+                  </span>
+                )}
               </p>
 
                <div className="mt-auto pt-6 border-t border-gray-800/50">
@@ -116,12 +142,8 @@ function ProductDetailModal({ onAddToCart }) {
                     </button>
                     <span className="w-10 text-center text-white font-black">{quantity}</span>
                     <button 
-                      onClick={() => {
-                        if (quantity < product.stock) {
-                          setQuantity(q => q + 1);
-                        }
-                      }}
-                      disabled={quantity >= product.stock || product.stock === 0}
+                      onClick={() => setQuantity(q => q + 1)}
+                      disabled={quantity >= availableToBuy || availableToBuy <= 0}
                       className="p-2 text-gray-300 hover:text-cyan-400 transition cursor-pointer"
                     >
                       <Plus size={18} />
@@ -138,7 +160,8 @@ function ProductDetailModal({ onAddToCart }) {
                       : "bg-cyan-600 hover:bg-cyan-500 text-white cursor-pointer"
                     }`}
                 >
-                  {product.stock === 0 ? "OUT OF STOCK" : "ADD TO CART"}
+                  {product.stock === 0 ? "OUT OF STOCK" : availableToBuy <= 0 
+                    ? "MAX QUANTITY IN CART" : "ADD TO CART"}
                 </button>
 
                 <button 

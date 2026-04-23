@@ -131,7 +131,12 @@ const LandingPage = () => {
                 <div className="px-2 transition-transform duration-300 group-hover:translate-x-2">
                   <p className="text-[10px] text-cyan-400 font-black uppercase tracking-widest mb-1">{product.category}</p>
                   <h3 className="text-xl font-black truncate text-white/90 group-hover:text-cyan-400 transition-colors">{product.name}</h3>
-                  <p className="text-gray-500 font-bold mt-1 text-lg">{product.price} ETB</p>
+                  <p className="text-gray-400 font-bold mt-1 text-lg tabular-nums">
+                  {Number(product.price).toLocaleString()} 
+                  <span className="text-[10px] text-cyan-500 ml-1.5 font-black uppercase tracking-tighter">
+                    ETB
+                  </span>
+                </p>
                 </div>
               </div>
             ))}

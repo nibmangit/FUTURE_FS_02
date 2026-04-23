@@ -159,7 +159,12 @@ function CheckoutForm() {
             <div className="pt-6">
               <div className="flex items-center justify-between mb-6 p-4 bg-cyan-500/5 rounded-xl border border-cyan-500/20">
                 <span className="text-gray-400">Total to Pay:</span>
-                <span className="text-3xl font-extrabold text-white">{safeTotal} ETB</span>
+                <div className="text-right">
+                  <span className="text-3xl font-black text-white tabular-nums">
+                    {Number(safeTotal).toLocaleString()}
+                  </span>
+                  <span className="text-sm font-bold text-cyan-400 ml-2">ETB</span>
+                </div>
               </div>
 
               {/* ERROR */}

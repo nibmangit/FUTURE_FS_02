@@ -35,7 +35,7 @@ class ProductListView(generics.ListAPIView):
                 Q(price__icontains=search)
             )
 
-        return queryset
+        return queryset.order_by('-created_at')
     
 class ProductDetailView(generics.RetrieveAPIView):
     queryset = Product.objects.all()

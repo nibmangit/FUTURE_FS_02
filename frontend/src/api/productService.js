@@ -2,7 +2,7 @@ import apiPublic from "./axiosPublic";
 
 const productService = {
   
-  getProducts: async ({ page = 1, category = null, search = "" } = {}) => {
+  getProducts: async ({ page = 1, category = null, search = "" }) => {
     const params = { page };
     if (category ){
       params.category = category

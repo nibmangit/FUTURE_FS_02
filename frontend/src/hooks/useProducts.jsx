@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import productService from "../api/productService";
 
-export const useProducts = ({ page, category, search }) => {
+export const useProducts = ({ page, category, search } = {}) => {
   const [products, setProducts] = useState([]);
   const [isProductLoading, setIsProductLoading] = useState(true);
   const [error, setError] = useState(null);

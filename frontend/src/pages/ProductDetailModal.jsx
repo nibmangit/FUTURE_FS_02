@@ -1,17 +1,68 @@
 import { Plus, Minus, X, ArrowLeft } from "lucide-react";
-import { useState } from "react";
-import { useProducts } from "../hooks/useProducts";
+import { useState, useEffect } from "react"; 
 import { useNavigate, useParams } from "react-router-dom";
 import LoadingScreen from "./LoadingScreen";
+import productService from "../api/productService";
+import {useCartContext} from "../hooks/useCartContext"
 
 function ProductDetailModal({ onAddToCart }) {
   const { id } = useParams();
-  const navigate = useNavigate();
-  const { products, isProductLoading } = useProducts();
+  const navigate = useNavigate(); 
+  const { getItemQuantity } = useCartContext();
+  
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
-  const product = products.find((p) => p.id === id);
+  const [error, setError] = useState(null);
+
+  const quantityInCart = getItemQuantity(id); 
+  const availableToBuy = product ? product.stock - quantityInCart : 0;
 
   const handleClose = () => navigate('/products');
+
+    useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        const data = await productService.getProductById(id);
+
+        const formatted = {
+          id: data.id,
+          name: data.title,
+          category: data.category,
+          price: Number(data.price),
+          description: data.description,
+          imageUrl: data.image,
+          stock: data.stock,
+        };
+
+        setProduct(formatted);
+
+        if (data.stock - quantityInCart <= 0) {
+          setQuantity(0);
+        } else {
+          setQuantity(1);
+        }
+      } catch (err) {
+        console.error(err);
+        setError("Product not found");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [id, quantityInCart]);
+
+  useEffect(() => {
+    if (availableToBuy <= 0) {
+      setQuantity(0);
+    } else if (quantity > availableToBuy) {
+      setQuantity(availableToBuy);
+    } else if (quantity === 0 && availableToBuy > 0) {
+      setQuantity(1);
+    }
+  }, [availableToBuy, quantity]);
 
   const handleAdd = () => {
     if (product) {
@@ -20,8 +71,8 @@ function ProductDetailModal({ onAddToCart }) {
     }
   };
 
-  if (isProductLoading) return <LoadingScreen />;
-  if (!product) {
+  if (loading) return <LoadingScreen />;
+  if (!product || error ){
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-950 text-white p-4">
         <div className="text-center">
@@ -59,11 +110,24 @@ function ProductDetailModal({ onAddToCart }) {
               <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3 leading-tight uppercase italic">
                 {product.name}
               </h2>
-              <p className="text-3xl sm:text-4xl font-extrabold text-cyan-400 mb-4 sm:mb-6">
-                ${product.price.toFixed(2)}
+              <p className="text-3xl sm:text-4xl font-black text-cyan-400 mb-4 sm:mb-6 tabular-nums">
+                {product.price.toLocaleString()} 
+                <span className="text-lg sm:text-xl font-bold ml-2 opacity-80">ETB</span>
               </p>
               <p className="text-gray-400 text-sm sm:text-base mb-8 leading-relaxed">
                 {product.description}
+              </p>
+
+              <p className="mt-4 text-sm text-gray-500">
+                Stock:{" "}
+                <span className={product.stock > 0 ? "text-green-400" : "text-red-400"}>
+                  {product.stock > 0 ? product.stock : "Out of stock"}
+                </span>
+                {quantityInCart > 0 && (
+                  <span className="ml-2 italic text-gray-400 text-xs">
+                    ({quantityInCart} already in cart)
+                  </span>
+                )}
               </p>
 
                <div className="mt-auto pt-6 border-t border-gray-800/50">
@@ -80,6 +144,7 @@ function ProductDetailModal({ onAddToCart }) {
                     <span className="w-10 text-center text-white font-black">{quantity}</span>
                     <button 
                       onClick={() => setQuantity(q => q + 1)}
+                      disabled={quantity >= availableToBuy || availableToBuy <= 0}
                       className="p-2 text-gray-300 hover:text-cyan-400 transition cursor-pointer"
                     >
                       <Plus size={18} />
@@ -89,9 +154,15 @@ function ProductDetailModal({ onAddToCart }) {
 
                 <button 
                   onClick={handleAdd}
-                  className="w-full mt-6 py-4 bg-cyan-600 hover:bg-cyan-500 cursor-pointe text-white font-bold text-lg rounded-xl shadow-lg transition duration-200 active:scale-[0.98]"
+                  disabled={product.stock === 0}
+                  className={`w-full mt-6 py-4 font-bold text-lg rounded-xl shadow-lg transition duration-200 active:scale-[0.98] 
+                    ${product.stock === 0 
+                      ? "bg-gray-700 text-gray-400 cursor-not-allowed" 
+                      : "bg-cyan-600 hover:bg-cyan-500 text-white cursor-pointer"
+                    }`}
                 >
-                  Add to Cart
+                  {product.stock === 0 ? "OUT OF STOCK" : availableToBuy <= 0 
+                    ? "MAX QUANTITY IN CART" : "ADD TO CART"}
                 </button>
 
                 <button 

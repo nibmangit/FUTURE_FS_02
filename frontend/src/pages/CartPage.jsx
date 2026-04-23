@@ -7,6 +7,8 @@ function CartPage({isLoggedIn}) {
   const { cartItems, cartTotal, cartItemCount, updateCartItem} = useCartContext();
   const navigate = useNavigate();  
 
+  const formattedTotal = Number(cartTotal).toLocaleString();
+
   return (
     <main className="container mx-auto max-w-6xl px-4 py-6 sm:py-10 min-h-[70vh]">
       <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white mb-6 sm:mb-10 border-b border-gray-800 pb-4">
@@ -48,12 +50,16 @@ function CartPage({isLoggedIn}) {
               </h2>
               <div className="space-y-4 text-gray-300">
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Subtotal({cartItemCount}) Items</span>
-                  <span className="font-medium text-white">${cartTotal}</span>
+                  <span className="text-gray-500 text-sm italic">Subtotal ({cartItemCount}) Items</span>
+                  <span className="font-bold text-white tabular-nums">
+                    {formattedTotal} <span className="text-xs text-gray-400 font-normal">ETB</span>
+                  </span>
                 </div> 
                 <div className="flex justify-between border-t border-gray-800 pt-4">
-                  <span className="text-xl font-bold text-cyan-400">Total</span>
-                  <span className="text-xl font-extrabold text-white">${cartTotal}</span>
+                  <span className="text-2xl font-black text-white tabular-nums block">
+                      {formattedTotal}
+                    </span>
+                    <span className="text-xs font-bold text-cyan-500 block uppercase">Ethiopian Birr</span>
                 </div>
               </div>
 

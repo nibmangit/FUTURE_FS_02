@@ -41,8 +41,8 @@ INSTALLED_APPS = [
     'store',
     'orders',
     'payments',
-    'cloudinary',
     'cloudinary_storage',
+    'cloudinary',
     'rest_framework',
     'corsheaders',
 ]
@@ -62,11 +62,11 @@ MIDDLEWARE = [
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    '.ngrok-free.app',
+    "nonelucidating-jenna-postoperative.ngrok-free.dev",
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
+    "http://localhost:5173",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -146,15 +146,6 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 
-# Cloudinary configuration
-
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.getenv("CLOUD_NAME"),
-    'API_KEY': os.getenv("CLOUD_API_KEY"),
-    'API_SECRET': os.getenv("CLOUD_API_SECRET"),
-}
-
 #Authentication with rest framework simple jwt
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -163,6 +154,8 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticated",
     ),
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 20,
 }
 
 from datetime import timedelta
@@ -175,3 +168,22 @@ SIMPLE_JWT = {
 
 #Chapa integration  
 CHAPA_SECRET_KEY = os.getenv('CHAPA_SECRET_KEY')
+
+
+# Cloudinary configuration
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv("CLOUD_NAME"),
+    'API_KEY': os.getenv("CLOUD_API_KEY"),
+    'API_SECRET': os.getenv("CLOUD_API_SECRET"),
+}
+
+
+import cloudinary
+
+cloudinary.config(
+    cloud_name=os.getenv("CLOUD_NAME"),
+    api_key=os.getenv("CLOUD_API_KEY"),
+    api_secret=os.getenv("CLOUD_API_SECRET"),
+)

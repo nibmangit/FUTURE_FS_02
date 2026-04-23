@@ -1,9 +1,35 @@
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 import { CheckCircle, Package, ArrowRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import orderService from "../api/orderService";
 
-function ConfirmationPage({ confirmationId }) {
+function ConfirmationPage() {
   const navigate = useNavigate();
-  
+
+  const [latestOrder, setLatestOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // ✅ Fetch latest order
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const orders = await orderService.getOrders();
+
+        if (orders.length > 0) {
+          setLatestOrder(orders[0]); // latest (already sorted)
+        }
+      } catch (err) {
+        console.error("Failed to fetch orders:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+  const orderId = latestOrder?.id || "Loading...";
+
   return ( 
     <div className="min-h-[80vh] flex items-center justify-center p-4 sm:p-6 lg:p-8"> 
       <div className="absolute inset-0 bg-gray-950 -z-10" /> 
@@ -15,20 +41,29 @@ function ConfirmationPage({ confirmationId }) {
           <CheckCircle size={80} className="text-green-500 mx-auto mb-6 animate-in zoom-in duration-500" />
           
           <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-4 tracking-tight">
-            Order Placed!
+            Payment Successful!
           </h1>
           
           <p className="text-gray-400 text-base sm:text-lg mb-8 leading-relaxed">
             Thank you for shopping with <span className="text-white font-medium">MiniTech</span>. 
-            We've received your order and started preparing it for shipment.
+            Your payment has been received and your order is now being processed.
           </p>
 
           <div className="bg-gray-800/50 rounded-2xl p-4 sm:p-6 mb-10 border border-gray-700/50">
-            <span className="text-xs uppercase tracking-widest text-gray-500 block mb-2">Order ID</span>
+            <span className="text-xs uppercase tracking-widest text-gray-500 block mb-2">
+              Order ID
+            </span>
             <span className="text-xl sm:text-2xl font-mono font-bold text-cyan-400 break-all">
-              {confirmationId || "MT-99X-CONF"}
+              {loading ? "Loading..." : orderId}
             </span>
           </div>
+
+          {/* OPTIONAL STATUS */}
+          {latestOrder && (
+            <p className="text-sm text-gray-400 mb-6">
+              Status: <span className="text-green-400 font-semibold capitalize">{latestOrder.status}</span>
+            </p>
+          )}
     
           <div className="flex flex-col gap-4">
             <button

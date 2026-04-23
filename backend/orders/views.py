@@ -72,6 +72,7 @@ class CheckoutView(APIView):
 class OrderHistoryView(generics.ListAPIView):
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = None
 
     def get_queryset(self):
         # A user should only see THEIR orders, not everyone's!

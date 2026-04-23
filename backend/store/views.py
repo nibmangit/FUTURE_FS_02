@@ -1,15 +1,47 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import permissions, generics, status
-from django.db.models import functions, F, Sum, Count, DecimalField, ExpressionWrapper
-from .models import Cart, Product
+from rest_framework import permissions, generics 
+from .models import Cart, Product , Category
 from .serializers import *
 
+from django.db.models import Q
+
+class CategoryListView(generics.ListAPIView):
+    queryset = Category.objects.all()
+    permission_classes = [permissions.AllowAny]
+    serializer_class = CategorySerializer
+    pagination_class = None
+
 class ProductListView(generics.ListAPIView):
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        queryset = Product.objects.all()
+
+        category = self.request.query_params.get("category")
+        search = self.request.query_params.get("search")
+
+        if category and category != "All":
+            queryset = queryset.filter(category__slug=category)
+
+        if search:
+            queryset = queryset.filter(
+                Q(title__icontains=search) |
+                Q(description__icontains=search) |
+                Q(category__name__icontains=search) |
+                Q(category__slug__icontains=search) |
+                Q(price__icontains=search)
+            )
+
+        return queryset.order_by('-created_at')
+    
+class ProductDetailView(generics.RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny]
+    lookup_field = 'id'
  
 class CartView(APIView):
     permission_classes = [permissions.IsAuthenticated]

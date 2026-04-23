@@ -36,7 +36,7 @@ class InitializePaymentView(APIView):
             "first_name": address.full_name,
             "tx_ref": tx_ref,
             "callback_url": "https://nonelucidating-jenna-postoperative.ngrok-free.dev/api/payments/webhook/",
-            "return_url": "http://localhost:3000/payment-success/", 
+            "return_url": "http://localhost:5173/confirmation/", 
             "customization": {
                 "title": "Mini Store",
                 "description": f"Order {order.id}"
@@ -79,9 +79,19 @@ class ChapaWebhookView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        data = request.data
-        
-        tx_ref = data.get('tx_ref')
+        return self.handle_payment(request.data)
+
+    def get(self, request):
+        return self.handle_payment(request.GET)
+
+    def handle_payment(self, data):
+        print("🔥 WEBHOOK DATA:", data)
+
+        tx_ref = data.get('tx_ref') or data.get('trx_ref')
+
+        if not tx_ref:
+            return Response({"error": "Missing tx_ref"}, status=400)
+
         payment = get_object_or_404(Payment, tx_ref=tx_ref)
         order = payment.order
 
@@ -104,14 +114,14 @@ class ChapaWebhookView(APIView):
                 product.stock -= item.quantity
                 product.save()
 
-            # Clear cart AFTER successful payment
+            # Clear cart
             try:
                 cart = Cart.objects.get(user=order.user)
                 cart.items.all().delete()
             except Cart.DoesNotExist:
                 pass
 
-            return Response({"status": "Payment successful and order completed"}, status=200)
+            return Response({"status": "Payment successful"}, status=200)
 
         else:
             payment.status = 'failed'

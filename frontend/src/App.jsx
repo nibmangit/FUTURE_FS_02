@@ -12,8 +12,7 @@ import ConfirmationPage from "./pages/ConfirmationPage";
 import AuthForm from "./pages/AuthForm";
 import OrderHistoryPage from "./pages/OrderHistoryPage";
 import ProtectedRoute from './components/ProtectedRoute';
-import NotFound from "./pages/NotFound";
-import { useProducts } from "./hooks/useProducts"; 
+import NotFound from "./pages/NotFound"; 
 import Footer from "./components/Footer";
 import LandingPage from "./pages/LandingPage";
 
@@ -21,8 +20,7 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const { updateCartItem } = useCartContext();
-  const { user, logout } = useAuth();
-  const {products, isProductLoading} = useProducts()
+  const { user, logout } = useAuth(); 
    
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [confirmationId, setConfirmationId] = useState(null);
@@ -30,21 +28,15 @@ function App() {
   const isLoggedIn = !!user;
 
   const handleAddToCart = (product, quantity = 1) => {
-    if(isProductLoading) return;
+    
+    if (!isLoggedIn) {
+      navigate("/authform");
+      return;
+    } 
 
-    const fullProductDetails =
-      products.find((p) => p.id === product.id) || product;
-
-    const productDataForStorage = {
-      name: fullProductDetails.name,
-      price: fullProductDetails.price,
-      imageUrl: fullProductDetails.imageUrl,
-      category: fullProductDetails.category,
-    };
-
-    updateCartItem(product.id, productDataForStorage, quantity); 
-    navigate('/products');
-  }; 
+    updateCartItem(product.id, quantity);
+    navigate("/cart"); // better UX than going back to products
+  };
 
   const isProductDetail = location.pathname.startsWith('/product/');
   const isAuthOrCheckout = ['/checkout', '/authform'].includes(location.pathname);

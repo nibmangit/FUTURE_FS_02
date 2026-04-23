@@ -1,80 +1,94 @@
-import { createContext, useState, useEffect } from 'react';
-import { AUTH_KEY } from '../data/getKey';
-import {MOCK_USERS} from '../data/mockUsers';
- 
+import { createContext, useState, useEffect } from "react";
+import {
+  loginUser,
+  registerUser,
+  getCurrentUser,
+} from "../api/authService";
+
 export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [users, setUsers] = useState(MOCK_USERS);
 
-  useEffect(() => {(async () => { 
-      const storedEmail = localStorage.getItem(AUTH_KEY);
-      if (storedEmail) { 
-        const userData = users.find(u => u.email === storedEmail);
-        if (userData) {
-          setUser({ email: userData.email, id: userData.id });
-        } else { 
-          localStorage.removeItem(AUTH_KEY);
+  // Restore session on refresh
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const accessToken = localStorage.getItem("accessToken");
+
+        if (!accessToken) {
+          setLoading(false);
+          return;
         }
+
+        const res = await getCurrentUser();
+        setUser(res.data);
+      } catch (error) {
+        console.error("Session expired");
+        localStorage.clear();
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
-    })();
-  }, [users]);
-
-  const login = async (email, password) => { 
-    const foundUser = users.find(
-      user => user.email === email && user.password === password
-    );
-    
-    if (foundUser) {
-      const userData = { email: foundUser.email, id: foundUser.id };
-      setUser(userData);
-      localStorage.setItem(AUTH_KEY, email);
-      return { success: true, user: userData };
-    }
-    
-    return { success: false, error: 'Invalid email or password' };
-  };
-
-  const signup = async (email, password) => { 
-    const userExists = users.some(user => user.email === email);
-    
-    if (userExists) {
-      return { success: false, error: 'User with this email already exists' };
-    }
-     
-    const newUser = {
-      id: users.length + 1,
-      email,
-      password,
     };
-     
-    setUsers(prev => [...prev, newUser]);
-     
-    const userData = { email: newUser.email, id: newUser.id };
-    setUser(userData);
-    localStorage.setItem(AUTH_KEY, email);
-    
-    return { success: true, user: userData };
+
+    loadUser();
+  }, []);
+
+  // LOGIN
+  const login = async (email, password) => {
+    try {
+      const res = await loginUser(email, password);
+
+      const { access, refresh } = res.data;
+
+      localStorage.setItem("accessToken", access);
+      localStorage.setItem("refreshToken", refresh);
+
+      const userRes = await getCurrentUser();
+      setUser(userRes.data);
+
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.detail || "Login failed",
+      };
+    }
   };
 
+  // SIGNUP (auto login)
+  const signup = async (email, password) => {
+    try {
+      await registerUser(email, password);
+
+      // auto login
+      return await login(email, password);
+    } catch (error) {
+      return {
+        success: false,
+        error: "Signup failed",
+      };
+    }
+  };
+
+  // LOGOUT
   const logout = () => {
     setUser(null);
-    localStorage.removeItem(AUTH_KEY);
-  };
-
-  const value = {
-    user,
-    login,
-    signup,
-    logout,
-    loading, 
+    localStorage.clear();
+    window.location.href = "/authform";
   };
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider
+      value={{
+        user,
+        login,
+        signup,
+        logout,
+        loading,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

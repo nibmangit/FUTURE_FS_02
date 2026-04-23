@@ -3,14 +3,26 @@ from .models import Cart, Product, CartItem
 
 class ProductSerializer(serializers.ModelSerializer):
     category = serializers.CharField(source = "category.name")
+    image = serializers.SerializerMethodField()
     class Meta:
         model = Product
         fields = ["id", "title", "description", "category", "stock", "price", "image"]
         
+    def get_image(self, obj):
+        if obj.image:
+            return obj.image.url
+        return None
+        
 class CartProductSerializer(serializers.ModelSerializer): 
+    image = serializers.SerializerMethodField()
     class Meta:
         model = Product
         fields = ["id", "title", "stock", "price", "image"]
+        
+    def get_image(self, obj):
+        if obj.image:
+            return obj.image.url
+        return None
     
 class CartItemSerializer(serializers.ModelSerializer):
     product = CartProductSerializer(read_only=True)

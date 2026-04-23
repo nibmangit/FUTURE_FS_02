@@ -12,8 +12,7 @@ import ConfirmationPage from "./pages/ConfirmationPage";
 import AuthForm from "./pages/AuthForm";
 import OrderHistoryPage from "./pages/OrderHistoryPage";
 import ProtectedRoute from './components/ProtectedRoute';
-import NotFound from "./pages/NotFound";
-import { useProducts } from "./hooks/useProducts"; 
+import NotFound from "./pages/NotFound"; 
 import Footer from "./components/Footer";
 import LandingPage from "./pages/LandingPage";
 
@@ -21,8 +20,7 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const { updateCartItem } = useCartContext();
-  const { user, logout } = useAuth();
-  const { isProductLoading} = useProducts()
+  const { user, logout } = useAuth(); 
    
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [confirmationId, setConfirmationId] = useState(null);
@@ -34,8 +32,7 @@ function App() {
     if (!isLoggedIn) {
       navigate("/authform");
       return;
-    }
-    if (isProductLoading) return;
+    } 
 
     updateCartItem(product.id, quantity);
     navigate("/cart"); // better UX than going back to products

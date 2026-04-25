@@ -16,7 +16,13 @@ class ShippingAddress(models.Model):
         return f"{self.full_name} - {self.city}"
     
 class Order(models.Model):
-    STATUS_CHOICES = [("pending", "Pending"), ("paid", "Paid"), ("failed", "Failed")]
+    STATUS_CHOICES = [
+        ("pending", "Pending"), 
+        ("paid", "Paid"), 
+        ("failed", "Failed"),
+        ("shipped", "Shipped"),
+        ("delivered", "Delivered")
+        ]
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)

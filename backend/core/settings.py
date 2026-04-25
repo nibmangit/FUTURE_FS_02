@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'store',
     'orders',
     'payments',
+    'admin_panel',
     'cloudinary_storage',
     'cloudinary',
     'rest_framework',

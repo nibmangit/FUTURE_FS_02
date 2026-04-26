@@ -35,3 +35,20 @@ class OrderDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ["id", "user_email", "total_price", "status", "created_at", "shipping_address", "items", ]
+        
+    def validate_status(self, value):
+        if self.instance:
+            current_status = self.instance.status
+            ALLOWED_TRANSITIONS = {
+                "pending": ["paid", "failed"],
+                "paid": ["shipped", "failed"],
+                "shipped": ["delivered"],
+                "delivered": [],
+                "failed": []
+            }
+
+            if value not in ALLOWED_TRANSITIONS.get(current_status, []):
+                raise serializers.ValidationError(
+                    f"Invalid status change from '{current_status}' to '{value}'."
+                )
+        return value

@@ -4,6 +4,9 @@ from .views.products import (
     AdminProductListCreateView, AdminProductDetailView, 
     AdminCategoryListCreateView, AdminCategoryDetailView 
 )
+from .views.dashboard import (
+    AdminDashboardView
+)
 
 urlpatterns = [
     # Orders
@@ -17,4 +20,7 @@ urlpatterns = [
     # Categories
     path("categories/", AdminCategoryListCreateView.as_view(), name="admin-category-list"),
     path("categories/<uuid:pk>/", AdminCategoryDetailView.as_view(), name="admin-category-detail"),
+    
+    #dashboard
+    path("dashboard/", AdminDashboardView.as_view(), name="admin-dashboard"),
 ]

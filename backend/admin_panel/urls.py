@@ -7,6 +7,9 @@ from .views.products import (
 from .views.dashboard import (
     AdminDashboardView
 )
+from .views.user import (
+    AdminUserListView, AdminUserDetailView
+)
 
 urlpatterns = [
     # Orders
@@ -23,4 +26,8 @@ urlpatterns = [
     
     #dashboard
     path("dashboard/", AdminDashboardView.as_view(), name="admin-dashboard"),
+    
+    #user
+    path("users/", AdminUserListView.as_view(), name="admin-users"),
+    path("users/<uuid:pk>/", AdminUserDetailView.as_view(), name="admin-user-detail"),
 ]

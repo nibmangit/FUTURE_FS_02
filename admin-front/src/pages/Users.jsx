@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import UserTable from "../components/users/UserTable";
 import UserDetailModal from "../components/users/UserDetailModal";
+import TableSkeleton from "../components/common/TableSkeleton";
+import EmptyState from "../components/common/EmptyState";
 
 export default function Users() {
   const users = [
@@ -29,6 +31,11 @@ export default function Users() {
 
   const [selectedUser, setSelectedUser] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => setLoading(false), 1000);
+  }, []);
 
   const handleView = (user) => {
     setSelectedUser(user);
@@ -39,7 +46,13 @@ export default function Users() {
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Users</h1>
 
-      <UserTable data={users} onView={handleView} />
+      {loading ? (
+        <TableSkeleton />
+      ):users.length === 0 ? (
+        <EmptyState message="No users found" />
+      ) : (
+        <UserTable data={users} onView={handleView} />
+      )}
 
       <UserDetailModal
         isOpen={isOpen}

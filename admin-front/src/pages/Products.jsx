@@ -52,11 +52,16 @@ function Products() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Products</h1>
+      
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Categories</h1>
 
-      <button onClick={handleAdd} className="bg-blue-600 px-4 py-2 rounded">
-        + Add Product
-      </button>
+        <button 
+        onClick={handleAdd}
+        className="bg-blue-600 px-4 py-2 rounded">
+          + Add Product
+        </button>
+      </div>
       <ProductTable
         data={products}
         onEdit={handleEdit}

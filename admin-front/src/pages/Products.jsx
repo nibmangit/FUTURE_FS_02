@@ -3,7 +3,7 @@ import ProductTable from "../components/products/ProductTable";
 import ProductFormModal from "../components/products/ProductFormModal";
 import DeleteConfirmModal from "../components/products/DeleteConfirmModal";
 
-export default function Products() {
+function Products() {
 
   const products = [
   {
@@ -78,3 +78,5 @@ export default function Products() {
     </div>
   );
 }
+
+export default Products;

@@ -6,7 +6,7 @@ import Orders from "../pages/Orders";
 import Users from "../pages/Users";
 import Categories from "../pages/Categories";
 
-export default function AppRoutes() {
+function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Dashboard />} />
@@ -17,3 +17,5 @@ export default function AppRoutes() {
     </Routes>
   );
 }
+
+export default AppRoutes;

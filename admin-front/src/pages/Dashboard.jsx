@@ -3,7 +3,7 @@ import RevenueChart from "../components/dashboard/RevenueChart";
 import TopProducts from "../components/dashboard/TopProducts";
 import LowStock from "../components/dashboard/LowStock";
 
-export default function Dashboard() {
+function Dashboard() {
   const data = {
     order_summary: {
       total: 4,
@@ -90,3 +90,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
+export default Dashboard;

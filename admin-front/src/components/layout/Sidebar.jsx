@@ -21,7 +21,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
       {/* --- FLOATING TOGGLE BUTTON --- */}
       <button
         onClick={toggleSidebar}
-        className="absolute -right-3 top-24 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center border border-slate-800 shadow-lg shadow-blue-500/40 hover:bg-blue-500 transition-colors z-50 group"
+        className="absolute cursor-pointer -right-3 top-24 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center border border-slate-800 shadow-lg shadow-blue-500/40 hover:bg-blue-500 transition-colors z-50 group"
       >
         {isOpen ? (
           <ChevronLeft size={14} className="text-white group-hover:-translate-x-0.5 transition-transform" />

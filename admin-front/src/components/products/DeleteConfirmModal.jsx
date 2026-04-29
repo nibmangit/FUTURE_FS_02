@@ -1,49 +1,28 @@
-export default function DeleteConfirmModal({ isOpen, onClose, onConfirm, product }) {
+import { AlertCircle } from "lucide-react";
 
+export default function DeleteConfirmModal({ isOpen, onClose, onConfirm, product }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-      
-      <div className="bg-[#111827] w-full max-w-md p-6 rounded-xl border border-gray-800">
-        
-        {/* Title */}
-        <h2 className="text-lg font-semibold text-red-400">
-          Delete Product
-        </h2>
-
-        {/* Message */}
-        <p className="text-gray-300 mt-3 text-sm">
-          Are you sure you want to delete:
-        </p>
-
-        <p className="mt-2 font-medium text-white">
-          {product?.title}
-        </p>
-
-        <p className="text-xs text-gray-500 mt-2">
-          This action cannot be undone.
-        </p>
-
-        {/* Actions */}
-        <div className="flex justify-end gap-2 mt-6">
-          
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600"
-          >
-            Cancel
-          </button>
-
-          <button
-            onClick={() => onConfirm(product?.id)}
-            className="px-4 py-2 bg-red-600 rounded hover:bg-red-700"
-          >
-            Delete
-          </button>
-
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
+      <div className="bg-slate-900 w-full max-w-md p-8 rounded-3xl border border-red-500/20 shadow-2xl shadow-red-500/10">
+        <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center mb-6 border border-red-500/20">
+          <AlertCircle size={32} className="text-red-500" />
         </div>
+        
+        <h2 className="text-xl font-black text-white">Delete this item?</h2>
+        <p className="text-slate-400 mt-2 text-sm leading-relaxed">
+          You are about to remove <span className="text-white font-bold">"{product?.title}"</span>. This action is permanent and cannot be reversed.
+        </p>
 
+        <div className="flex gap-3 mt-8">
+          <button onClick={onClose} className="flex-1 px-4 py-3 bg-slate-800 cursor-pointer hover:bg-slate-700 text-white rounded-xl font-bold transition-all">
+            Keep it
+          </button>
+          <button onClick={() => onConfirm(product?.id)} className="flex-1 px-4 py-3 bg-red-600 cursor-pointer hover:bg-red-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-red-600/20">
+            Delete Now
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ import {
 } from "lucide-react";
 
 const links = [
-  { name: "Dashboard", path: "/", icon: <LayoutDashboard size={20} /> },
+  { name: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={20} /> },
   { name: "Products", path: "/products", icon: <Package size={20} /> },
   { name: "Categories", path: "/categories", icon: <Layers size={20} /> },
   { name: "Orders", path: "/orders", icon: <ShoppingCart size={20} /> },

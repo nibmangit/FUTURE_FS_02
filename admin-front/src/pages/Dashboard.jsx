@@ -1,5 +1,5 @@
 
-import { ShoppingBag, DollarSign, Clock, CheckCircle } from "lucide-react";
+import { ShoppingBag, Clock, CheckCircle, Banknote } from "lucide-react";
 import StatCard from "../components/dashboard/StatCard";
 import RevenueChart from "../components/dashboard/RevenueChart";
 import TopProducts from "../components/dashboard/TopProducts";
@@ -66,7 +66,7 @@ return (
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard title="Total Orders" value={data.order_summary.total} icon={ShoppingBag} />
-        <StatCard title="Total Revenue" value={`$${data.total_revenue.toLocaleString()}`} color="text-blue-400" icon={DollarSign} />
+        <StatCard title="Total Revenue" value={Number(data.total_revenue).toLocaleString()} color="text-blue-400" icon={Banknote} symbol="ETB" />
         <StatCard title="Pending" value={data.order_summary.pending} color="text-amber-400" icon={Clock} />
         <StatCard title="Delivered" value={data.order_summary.delivered} color="text-emerald-400" icon={CheckCircle} /> 
       </div>

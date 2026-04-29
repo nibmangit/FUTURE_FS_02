@@ -51,7 +51,7 @@ export default function ProductDetailDrawer({ isOpen, onClose, product, onEdit }
                 <Tag size={14} />
                 <span className="text-[10px] font-bold uppercase tracking-wider">Price</span>
               </div>
-              <p className="text-xl font-black text-white">${product.price}</p>
+              <p className="text-xl font-black text-white">{Number(product.price).toLocaleString()}<span className="text-sm text-cyan-400 ml-1">ETB</span></p>
             </div>
             <div className="p-4 rounded-2xl bg-slate-900/50 border border-slate-800">
               <div className="flex items-center gap-2 text-slate-500 mb-2">

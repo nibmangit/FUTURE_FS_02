@@ -39,7 +39,9 @@ export default function ProductTable({ data, onView, onEdit, onDelete }) {
                 </div>
               </td>
               <td className="p-4 text-slate-400 font-medium">{product.category.name}</td>
-              <td className="p-4 font-black text-white">${Number(product.price).toLocaleString()}</td>
+              <td className="p-4 text-xl font-black text-white">{Number(product.price).toLocaleString()}
+                <span className="text-sm text-cyan-400 ml-1">ETB</span>
+              </td>
               <td className="p-4">
                 <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter ${
                   product.stock === 0 ? "bg-red-500/10 text-red-500 ring-1 ring-red-500/20" :

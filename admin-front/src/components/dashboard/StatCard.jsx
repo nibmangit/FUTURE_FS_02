@@ -1,6 +1,6 @@
 import { TrendingUp } from "lucide-react";
 
-export default function StatCard({ title, value, color, icon: Icon }) {
+export default function StatCard({ title, value, color, icon: Icon, symbol }) {
   return (
     <div className="relative overflow-hidden bg-[#020617]/40 backdrop-blur-md p-6 rounded-2xl border border-slate-800/50 group hover:border-blue-500/30 transition-all duration-300">
       {/* Background Decoration */}
@@ -22,7 +22,14 @@ export default function StatCard({ title, value, color, icon: Icon }) {
           <h2 className={`text-3xl font-black tracking-tight ${color || "text-white"}`}>
             {value}
           </h2>
-          <div className="flex items-center text-[10px] text-emerald-500 font-bold mb-1 bg-emerald-500/10 px-1.5 py-0.5 rounded">
+
+          {symbol && (
+            <span className={`text-xs font-bold uppercase tracking-wider ${color || "text-cyan-400"}`}>
+              {symbol}
+            </span>
+          )}
+
+          <div className="ml-auto flex items-center text-[10px] text-emerald-500 font-bold mb-1 bg-emerald-500/10 px-1.5 py-0.5 rounded">
             <TrendingUp size={10} className="mr-1" /> +12%
           </div>
         </div>

@@ -1,14 +1,14 @@
 export default function StatusBadge({ status }) {
   const styles = {
-    pending: "bg-yellow-500/20 text-yellow-400",
-    paid: "bg-blue-500/20 text-blue-400",
-    shipped: "bg-purple-500/20 text-purple-400",
-    delivered: "bg-green-500/20 text-green-400",
-    failed: "bg-red-500/20 text-red-400",
+    pending: "bg-amber-500/10 text-amber-500 ring-amber-500/20",
+    paid: "bg-blue-500/10 text-blue-500 ring-blue-500/20",
+    shipped: "bg-purple-500/10 text-purple-500 ring-purple-500/20",
+    delivered: "bg-emerald-500/10 text-emerald-500 ring-emerald-500/20",
+    failed: "bg-red-500/10 text-red-500 ring-red-500/20",
   };
 
   return (
-    <span className={`px-2 py-1 text-xs rounded ${styles[status]}`}>
+    <span className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-widest rounded-full ring-1 ring-inset ${styles[status]}`}>
       {status}
     </span>
   );

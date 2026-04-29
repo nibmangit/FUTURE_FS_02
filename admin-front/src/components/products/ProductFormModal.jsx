@@ -44,7 +44,7 @@ export default function ProductFormModal({ isOpen, onClose, product }) {
           </div>
 
           <div>
-            <label className="text-[10px] font-black uppercase text-slate-500 ml-1 mb-1 block">Price ($)</label>
+            <label className="text-[10px] font-black uppercase text-slate-500 ml-1 mb-1 block">Price (ETB)</label>
             <input type="number" name="price" value={form.price} onChange={(e) => setForm({...form, price: e.target.value})} className={inputClass} />
           </div>
 

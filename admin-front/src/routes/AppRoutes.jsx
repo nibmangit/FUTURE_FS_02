@@ -1,19 +1,24 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import Dashboard from "../pages/Dashboard";
 import Products from "../pages/Products";
 import Orders from "../pages/Orders";
 import Users from "../pages/Users";
 import Categories from "../pages/Categories";
+import Login from "../pages/Login"
 
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Dashboard />} />
+      <Route path="/" element={<Login />} />
+
+      <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/products" element={<Products />} />
       <Route path="/orders" element={<Orders />} />
       <Route path="/users" element={<Users />} />
       <Route path="/categories" element={<Categories />} />
+
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

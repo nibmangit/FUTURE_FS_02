@@ -1,153 +1,145 @@
+import { X, MapPin, Package, CreditCard, Clock } from "lucide-react";
 import StatusBadge from "./StatusBadge";
 
-export default function OrderDetailModal({isOpen,  onClose, order}) { 
-  if (!isOpen || !order) return null;
- 
+const orderdetail = 
+  {
+    id: "a4e5b1ce-9737-4e22-922b-6fa129d4dfdf",
+    user_email: "d2708071@gmail.com",
+    total_price: "6900.00",
+    status: "paid",
+    created_at: "2026-04-21T20:32:57.897932Z",
+    shipping_address: {
+        id: 1,
+        full_name: "Nib Man",
+        phone_number: "0903500000",
+        city: "Bahir Dar",
+        district: "Kebele 10",
+        specific_address: "Poly",
+        is_default: false
+    },
+    items: [
+        {
+            id: "d6ff5edb-4e56-4895-8dbc-599d6ea944ee",
+            product: "51aa59a8-d0a2-43dc-9809-6f40e119dd60",
+            product_name: "Apple AirPods Max Silver",
+            product_image: "lokelanfrcf3qnjjbem6",
+            quantity: 3,
+            price_at_purchase: "2300.00",
+            subtotal: 6900.0
+        },
+        {
+            id: "d6ff5edb-4e56-4895-8dbc-599d6ea944ee",
+            product: "51aa59a8-d0a2-43dc-9809-6f40e119dd60",
+            product_name: "Apple AirPods Max Silver",
+            product_image: "lokelanfrcf3qnjjbem6",
+            quantity: 3,
+            price_at_purchase: "2300.00",
+            subtotal: 6900.0
+        }
+    ]
+}
 
-  console.log(order.id);
+export default function OrderDetailModal({ isOpen, onClose, order }) {
+  order = orderdetail
+  if (!isOpen || !order) return null;
+
+  const sectionLabel = "text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 flex items-center gap-2";
+
   return (
-    <div className="fixed inset-0 bg-black/60 flex justify-end z-50">
+    <>
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]" onClick={onClose} />
       
-      {/* Side Panel */}
-      <div className="w-full max-w-xl h-full bg-[#111827] p-6 overflow-y-auto border-l border-gray-800">
+      <div className="fixed right-0 top-0 h-full w-full max-w-xl bg-[#020617] border-l border-slate-800 shadow-2xl z-[110] flex flex-col transition-transform duration-300">
         
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-lg font-semibold">Order Details</h2>
-
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-white"
-          >
-            ✕
+        <div className="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/30">
+          <div>
+            <h2 className="text-xl font-black text-white uppercase tracking-tight">Order Details</h2>
+            <p className="text-xs text-slate-500 mt-1 font-mono">{order.id}</p>
+          </div>
+          <button onClick={onClose} className="p-2 cursor-pointer hover:bg-slate-800 rounded-full transition-colors text-slate-400 hover:text-white">
+            <X size={24} />
           </button>
         </div>
 
-        {/* Order Info */}
-        <div className="space-y-3 text-sm">
-          <p>
-            <span className="text-gray-400">Order ID:</span>{" "}
-            {order.id}
-          </p>
+        <div className="flex-1 overflow-y-auto p-8 space-y-10 custom-scrollbar">
+          
+          {/* Summary Cards */}
+          <div className="grid grid-cols-2 gap-4">
+             <div className="p-4 rounded-2xl bg-slate-900/50 border border-slate-800">
+                <div className={sectionLabel}><CreditCard size={12}/> Total Paid</div>
+                <div className="text-2xl font-black text-emerald-400">
+                  <span className="text-xl font-bold text-white whitespace-nowrap">
+                    {Number(order.total_price).toLocaleString()} 
+                    <span className="text-sm text-cyan-400 ml-1">ETB</span>
+                  </span>
+                </div>
+             </div>
+             <div className="p-4 rounded-2xl bg-slate-900/50 border border-slate-800">
+                <div className={sectionLabel}><Clock size={12}/> Status</div>
+                <StatusBadge status={order.status} />
+             </div>
+          </div>
 
-          <p>
-            <span className="text-gray-400">User:</span>{" "}
-            {order.user_email}
-          </p>
-
-          <p>
-            <span className="text-gray-400">Status:</span>{" "}
-            <StatusBadge status={order.status} />
-          </p>
-
-          <p>
-            <span className="text-gray-400">Total:</span>{" "}
-            <span className="text-green-400">
-              ${Number(order.total_price).toLocaleString()}
-            </span>
-          </p>
-
-          <p>
-            <span className="text-gray-400">Date:</span>{" "}
-            {new Date(order.created_at).toLocaleString()}
-          </p>
-        </div>
-
-        {/* Divider */}
-        <div className="my-6 border-t border-gray-800" />
-
-        {/* Shipping Address */}
-        <div>
-          <h3 className="font-semibold mb-3">Shipping Address</h3>
-
-          {order.shipping_address ? (
-            <div className="text-sm space-y-1 text-gray-300">
-              <p>{order.shipping_address.full_name}</p>
-              <p>{order.shipping_address.phone_number}</p>
-              <p>
-                {order.shipping_address.city},{" "}
-                {order.shipping_address.district}
+          {/* Customer & Shipping */}
+          <section>
+            <h3 className={sectionLabel}><MapPin size={12}/> Shipping Information</h3>
+            <div className="bg-slate-900/50 p-6 rounded-2xl border border-slate-800 space-y-2">
+              <p className="text-slate-200 font-bold">{order.shipping_address?.full_name || "Guest User"}</p>
+              <p className="text-sm text-slate-400">{order.shipping_address?.phone_number}</p>
+              <p className="text-sm text-slate-400">
+                {order.shipping_address?.city}, {order.shipping_address?.district}
               </p>
-              <p>{order.shipping_address.specific_address}</p>
+              <p className="text-xs text-slate-500 italic">{order.shipping_address?.specific_address}</p>
             </div>
-          ) : (
-            <p className="text-gray-500 text-sm">No address</p>
-          )}
-        </div>
+          </section>
 
-        {/* Divider */}
-        <div className="my-6 border-t border-gray-800" />
-
-        {/* Items */}
-        <div>
-          <h3 className="font-semibold mb-3">Order Items</h3>
-
-          <div className="space-y-3">
-            {order.items?.map((item) => (
-              <div
-                key={item.id}
-                className="flex justify-between items-center bg-[#0f172a] p-3 rounded border border-gray-800"
-              >
-                
-                {/* Left */}
-                <div className="flex gap-3 items-center">
-                  
-                  {/* Image (Cloudinary public_id) */}
-                  <div className="w-12 h-12 bg-gray-700 rounded overflow-hidden">
+          {/* Order Items */}
+          <section>
+            <h3 className={sectionLabel}><Package size={12}/> Line Items</h3>
+            <div className="space-y-3">
+              {order.items?.map((item, idx) => (
+                <div key={idx} className="flex gap-4 p-4 rounded-2xl bg-slate-900/30 border border-slate-800/50 group hover:border-slate-700 transition-colors">
+                  <div className="w-16 h-16 rounded-xl bg-slate-800 overflow-hidden border border-slate-700">
                     <img
                       src={`https://res.cloudinary.com/YOUR_CLOUD_NAME/image/upload/${item.product_image}`}
-                      alt={item.product_name}
                       className="w-full h-full object-cover"
+                      alt=""
                     />
                   </div>
+                  <div className="flex-1">
+                    <h4 className="text-sm font-bold text-slate-200">{item.product_name}</h4>
+                    <p className="text-xs text-slate-500 mt-1">{item.quantity} units × {Number(item.price_at_purchase).toLocaleString()} 
+                      <span className="text-sm text-cyan-400 ml-1">ETB</span></p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-black text-white">
+                      {Number(item.subtotal).toLocaleString()} 
 
-                  <div className="text-sm">
-                    <p>{item.product_name}</p>
-                    <p className="text-gray-400">
-                      Qty: {item.quantity}
-                    </p>
+                      <span className="text-sm text-cyan-400 ml-1">ETB</span>
+                      </p>
                   </div>
                 </div>
+              ))}
+            </div>
+          </section>
 
-                {/* Right */}
-                <div className="text-right text-sm">
-                  <p className="text-gray-400">
-                    ${Number(item.price_at_purchase).toLocaleString()}
-                  </p>
-                  <p className="text-green-400 font-medium">
-                    ${Number(item.subtotal).toLocaleString()}
-                  </p>
-                </div>
-
-              </div>
-            ))}
-          </div>
+          {/* Admin Management Section */}
+          <section className="pt-6 border-t border-slate-800">
+             <h3 className={sectionLabel}>Fulfillment Management</h3>
+             <div className="flex gap-3">
+                <select className="flex-1 bg-slate-900 border border-slate-800 text-slate-300 p-3 rounded-xl focus:outline-none focus:border-blue-500">
+                   <option value="pending">Mark as Pending</option>
+                   <option value="shipped">Mark as Shipped</option>
+                   <option value="delivered">Mark as Delivered</option>
+                </select>
+                <button className="bg-blue-600 cursor-pointer hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20">
+                  Update
+                </button>
+             </div>
+          </section>
         </div>
-
-        {/* Divider */}
-        <div className="my-6 border-t border-gray-800" />
-
-        {/* Status Update */}
-        <div>
-          <h3 className="font-semibold mb-3">Update Status</h3>
-
-          <select
-            defaultValue={order.status}
-            className="w-full p-2 rounded bg-[#0f172a] border border-gray-700"
-          >
-            <option value="pending">pending</option>
-            <option value="paid">paid</option>
-            <option value="shipped">shipped</option>
-            <option value="delivered">delivered</option>
-            <option value="failed">failed</option>
-          </select>
-
-          <button className="mt-3 w-full bg-blue-600 py-2 rounded">
-            Update Status
-          </button>
-        </div>
-
       </div>
-    </div>
+    </>
   );
 }

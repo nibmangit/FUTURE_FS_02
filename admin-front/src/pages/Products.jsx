@@ -22,10 +22,10 @@ function Products() {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  const fetchProducts = useCallback(async (page) => {
+  const fetchProducts = useCallback(async (pageNumber) => {
     try {
       setLoading(true);
-      const data = await productService.getProducts(page);
+      const data = await productService.getProducts({ page: pageNumber });
       setProducts(data.results); 
       setTotalProducts(data.count);
     } catch {

@@ -1,47 +1,50 @@
-import { X, MapPin, Package, CreditCard, Clock } from "lucide-react";
+import { X, MapPin, Package, CreditCard, Clock, Loader2 } from "lucide-react";
 import StatusBadge from "./StatusBadge";
+import toast from "react-hot-toast";
+import { useEffect, useState } from "react";
+import orderService from "../../api/orderService";
 
-const orderdetail = 
-  {
-    id: "a4e5b1ce-9737-4e22-922b-6fa129d4dfdf",
-    user_email: "d2708071@gmail.com",
-    total_price: "6900.00",
-    status: "paid",
-    created_at: "2026-04-21T20:32:57.897932Z",
-    shipping_address: {
-        id: 1,
-        full_name: "Nib Man",
-        phone_number: "0903500000",
-        city: "Bahir Dar",
-        district: "Kebele 10",
-        specific_address: "Poly",
-        is_default: false
-    },
-    items: [
-        {
-            id: "d6ff5edb-4e56-4895-8dbc-599d6ea944ee",
-            product: "51aa59a8-d0a2-43dc-9809-6f40e119dd60",
-            product_name: "Apple AirPods Max Silver",
-            product_image: "lokelanfrcf3qnjjbem6",
-            quantity: 3,
-            price_at_purchase: "2300.00",
-            subtotal: 6900.0
-        },
-        {
-            id: "d6ff5edb-4e56-4895-8dbc-599d6ea944ee",
-            product: "51aa59a8-d0a2-43dc-9809-6f40e119dd60",
-            product_name: "Apple AirPods Max Silver",
-            product_image: "lokelanfrcf3qnjjbem6",
-            quantity: 3,
-            price_at_purchase: "2300.00",
-            subtotal: 6900.0
+export default function OrderDetailModal({ isOpen, onClose, order, onStatusUpdate }) {
+  const [fullOrder, setFullOrder] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [newStatus, setNewStatus] = useState("");
+  const [updating, setUpdating] = useState(false);
+
+  useEffect(() => {
+    const getDetails = async () => {
+      if (isOpen && order?.id) {
+        setLoading(true);
+        try { 
+          const data = await orderService.getOrderDetail(order.id);
+          setFullOrder(data);
+          setNewStatus(data.status);
+        } catch{
+          toast.error("Failed to load order details");
+          onClose();
+        } finally {
+          setLoading(false);
         }
-    ]
-}
+      }
+    };
 
-export default function OrderDetailModal({ isOpen, onClose, order }) {
-  order = orderdetail
+    getDetails();
+  }, [isOpen, order?.id, onClose]);
+
   if (!isOpen || !order) return null;
+
+  const handleUpdateStatus = async () => {
+    setUpdating(true);
+    try { 
+      await orderService.updateOrderStatus(order.id, newStatus);
+      toast.success(`Order status updated to ${newStatus}`);
+      onStatusUpdate();
+      onClose();
+    } catch (err){
+      toast.error(err.response?.data?.message || err.message || "Faild to update status");
+    } finally {
+      setUpdating(false);
+    }
+  };
 
   const sectionLabel = "text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 flex items-center gap-2";
 
@@ -55,7 +58,7 @@ export default function OrderDetailModal({ isOpen, onClose, order }) {
         <div className="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/30">
           <div>
             <h2 className="text-xl font-black text-white uppercase tracking-tight">Order Details</h2>
-            <p className="text-xs text-slate-500 mt-1 font-mono">{order.id}</p>
+            <p className="text-xs text-slate-500 mt-1 font-mono">ID: {order?.id}</p>
           </div>
           <button onClick={onClose} className="p-2 cursor-pointer hover:bg-slate-800 rounded-full transition-colors text-slate-400 hover:text-white">
             <X size={24} />
@@ -64,20 +67,27 @@ export default function OrderDetailModal({ isOpen, onClose, order }) {
 
         <div className="flex-1 overflow-y-auto p-8 space-y-10 custom-scrollbar">
           
+          {loading ? (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#020617] z-20">
+              <Loader2 className="text-blue-500 animate-spin mb-4" size={40} />
+              <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">Retrieving Secure Data...</p>
+            </div>
+          ) : fullOrder && (
+            <>
           {/* Summary Cards */}
           <div className="grid grid-cols-2 gap-4">
              <div className="p-4 rounded-2xl bg-slate-900/50 border border-slate-800">
                 <div className={sectionLabel}><CreditCard size={12}/> Total Paid</div>
                 <div className="text-2xl font-black text-emerald-400">
                   <span className="text-xl font-bold text-white whitespace-nowrap">
-                    {Number(order.total_price).toLocaleString()} 
+                    {Number(fullOrder.total_price).toLocaleString()} 
                     <span className="text-sm text-cyan-400 ml-1">ETB</span>
                   </span>
                 </div>
              </div>
              <div className="p-4 rounded-2xl bg-slate-900/50 border border-slate-800">
                 <div className={sectionLabel}><Clock size={12}/> Status</div>
-                <StatusBadge status={order.status} />
+                <StatusBadge status={fullOrder.status} />
              </div>
           </div>
 
@@ -85,12 +95,12 @@ export default function OrderDetailModal({ isOpen, onClose, order }) {
           <section>
             <h3 className={sectionLabel}><MapPin size={12}/> Shipping Information</h3>
             <div className="bg-slate-900/50 p-6 rounded-2xl border border-slate-800 space-y-2">
-              <p className="text-slate-200 font-bold">{order.shipping_address?.full_name || "Guest User"}</p>
-              <p className="text-sm text-slate-400">{order.shipping_address?.phone_number}</p>
+              <p className="text-slate-200 font-bold">{fullOrder.shipping_address?.full_name || "Guest User"}</p>
+              <p className="text-sm text-slate-400">{fullOrder.shipping_address?.phone_number}</p>
               <p className="text-sm text-slate-400">
-                {order.shipping_address?.city}, {order.shipping_address?.district}
+                {fullOrder.shipping_address?.city}, {fullOrder.shipping_address?.district}
               </p>
-              <p className="text-xs text-slate-500 italic">{order.shipping_address?.specific_address}</p>
+              <p className="text-xs text-slate-500 italic">{fullOrder.shipping_address?.specific_address}</p>
             </div>
           </section>
 
@@ -98,11 +108,11 @@ export default function OrderDetailModal({ isOpen, onClose, order }) {
           <section>
             <h3 className={sectionLabel}><Package size={12}/> Line Items</h3>
             <div className="space-y-3">
-              {order.items?.map((item, idx) => (
+              {fullOrder.items?.map((item, idx) => (
                 <div key={idx} className="flex gap-4 p-4 rounded-2xl bg-slate-900/30 border border-slate-800/50 group hover:border-slate-700 transition-colors">
                   <div className="w-16 h-16 rounded-xl bg-slate-800 overflow-hidden border border-slate-700">
                     <img
-                      src={`https://res.cloudinary.com/YOUR_CLOUD_NAME/image/upload/${item.product_image}`}
+                      src={`https://res.cloudinary.com/dahvdgqbf/image/upload/${item.product_image}`}
                       className="w-full h-full object-cover"
                       alt=""
                     />
@@ -125,19 +135,31 @@ export default function OrderDetailModal({ isOpen, onClose, order }) {
           </section>
 
           {/* Admin Management Section */}
-          <section className="pt-6 border-t border-slate-800">
-             <h3 className={sectionLabel}>Fulfillment Management</h3>
+          <section className="p-6 rounded-2xl bg-blue-600/5 border border-blue-600/10">
+             <h3 className={sectionLabel}><Package size={12}/> Update Fulfillment</h3>
              <div className="flex gap-3">
-                <select className="flex-1 bg-slate-900 border border-slate-800 text-slate-300 p-3 rounded-xl focus:outline-none focus:border-blue-500">
-                   <option value="pending">Mark as Pending</option>
-                   <option value="shipped">Mark as Shipped</option>
-                   <option value="delivered">Mark as Delivered</option>
+                <select 
+                  value={newStatus}
+                  onChange={(e) => setNewStatus(e.target.value)}
+                  className="flex-1 bg-[#020617] cursor-pointer border border-slate-800 text-slate-300 p-3 rounded-xl focus:border-blue-500 outline-none"
+                >
+                   <option value="pending">Pending</option>
+                   <option value="paid">Paid</option>
+                   <option value="shipped">Shipped</option>
+                   <option value="delivered">Delivered</option>
+                   <option value="failed">Failed</option>
                 </select>
-                <button className="bg-blue-600 cursor-pointer hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20">
-                  Update
+                <button 
+                  onClick={handleUpdateStatus}
+                  disabled={updating || newStatus === order.status}
+                  className="bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 disabled:text-slate-500 disabled:cursor-not-allowed cursor-pointer text-white px-8 py-3 rounded-xl font-bold transition-all flex items-center gap-2"
+                >
+                  {updating ? <Loader2 size={18} className="animate-spin" /> : "Save Changes"}
                 </button>
              </div>
           </section>
+          </>
+          )}
         </div>
       </div>
     </>

@@ -1,6 +1,7 @@
 import { Trophy } from "lucide-react";
 
 export default function TopProducts({ data }) {
+  if (!data) return <div className="text-slate-500 text-xs p-4">Loading top products...</div>;
   return (
     <div className="bg-[#020617]/40 backdrop-blur-md p-6 rounded-2xl border border-slate-800/50 flex flex-col h-full">
       <div className="flex items-center gap-2 mb-6">

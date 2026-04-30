@@ -1,6 +1,7 @@
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 
 export default function RevenueChart({ data }) {
+  if (!data) return <div className="text-slate-500 text-xs p-4">Loading chart data...</div>;
   return (
     <div className="bg-[#020617]/40 backdrop-blur-md p-6 rounded-2xl border border-slate-800/50 h-full">
       <div className="flex items-center justify-between mb-8">

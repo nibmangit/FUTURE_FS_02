@@ -1,6 +1,7 @@
 import { AlertTriangle, PackageSearch } from "lucide-react";
 
 export default function LowStock({ data }) {
+  if (!data) return <div className="text-slate-500 text-xs p-4">Loading low stock...</div>;
   return (
     <div className="bg-[#020617]/40 backdrop-blur-md p-6 rounded-2xl border border-slate-800/50">
       <div className="flex items-center justify-between mb-6">

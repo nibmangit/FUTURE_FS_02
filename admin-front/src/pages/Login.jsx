@@ -1,17 +1,26 @@
 import { useState } from "react";
 import { Lock, Mail, Eye, EyeOff, ShieldCheck, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 export default function Login() {
   const navigate = useNavigate()
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { login, loading } = useAuth();
 
-  const handleLogin = (e) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); 
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    setLoading(true); 
-    setTimeout(() => setLoading(false), 2000);
-    navigate('/dashboard')
+    try {
+      await login(email, password);
+      toast.success("Access Granted");
+      navigate("/dashboard");
+    } catch (err) {
+      toast.error("Invalid Admin Credentials");
+    }
   };
 
   return (
@@ -25,10 +34,10 @@ export default function Login() {
         
         {/* Logo / Brand Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 mb-4 shadow-xl shadow-blue-500/20 border border-white/10">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-linear-to-br from-blue-500 to-indigo-600 mb-4 shadow-xl shadow-blue-500/20 border border-white/10">
             <ShieldCheck size={32} className="text-white" />
           </div>
-          <h1 className="text-3xl font-black text-white tracking-tighter uppercase">Nexus Admin</h1>
+          <h1 className="text-3xl font-black text-white tracking-tighter uppercase">MiniTech Admin</h1>
           <p className="text-slate-500 text-xs font-bold tracking-[0.2em] mt-2 uppercase">
             Management Portal <span className="text-blue-500 mx-1">•</span> Bahir Dar, ET
           </p>
@@ -45,6 +54,8 @@ export default function Login() {
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-500 transition-colors" size={18} />
                 <input 
                   type="email" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@company.com"
                   className="w-full bg-slate-900/50 border border-slate-800 rounded-2xl py-3.5 pl-12 pr-4 text-white placeholder:text-slate-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all"
                   required
@@ -63,6 +74,7 @@ export default function Login() {
                 <input 
                   type={showPassword ? "text" : "password"} 
                   placeholder="••••••••"
+                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full bg-slate-900/50 border border-slate-800 rounded-2xl py-3.5 pl-12 pr-12 text-white placeholder:text-slate-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all"
                   required
                 />
@@ -80,7 +92,7 @@ export default function Login() {
             <button 
               type="submit"
               disabled={loading}
-              className="w-full group mt-4 relative overflow-hidden rounded-2xl bg-blue-600 p-4 font-black text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-500 active:scale-[0.98] disabled:opacity-70"
+              className="w-full group mt-4 cursor-pointer relative overflow-hidden rounded-2xl bg-blue-600 p-4 font-black text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-500 active:scale-[0.98] disabled:opacity-70"
             >
               <div className="relative z-10 flex items-center justify-center gap-2">
                 {loading ? (
@@ -99,7 +111,7 @@ export default function Login() {
 
         {/* Footer Info */}
         <p className="text-center mt-8 text-slate-600 text-[10px] font-medium tracking-widest uppercase">
-          &copy; 2026 Nexus Systems <span className="mx-1">|</span> Secure Encrypted Session
+          &copy; 2026 MiniTech Systems <span className="mx-1">|</span> Secure Encrypted Session
         </p>
       </div>
     </div>

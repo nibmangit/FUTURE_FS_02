@@ -4,7 +4,7 @@ export default function DeleteCategoryModal({ isOpen, onClose, onConfirm, catego
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-60 p-4">
       <div className="bg-slate-900 w-full max-w-md p-8 rounded-3xl border border-red-500/20 shadow-2xl">
         <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center mb-6 border border-red-500/20">
           <AlertCircle size={32} className="text-red-500" />

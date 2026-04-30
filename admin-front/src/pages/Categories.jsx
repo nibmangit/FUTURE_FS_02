@@ -4,7 +4,7 @@ import CategoryTable from "../components/categories/CategoryTable";
 import CategoryFormModal from "../components/categories/CategoryFormModal";
 import DeleteCategoryModal from "../components/categories/DeleteCategoryModal";
 import TableSkeleton from "../components/common/TableSkeleton";
-import EmptyState from "../components/common/EmptyState";
+import EmptyState from "../components/common/EmptyState"; 
 
 function Categories() {
   const [loading, setLoading] = useState(true);
@@ -47,7 +47,7 @@ function Categories() {
   };
 
   const handleDeleteConfirm = (id) => {
-    console.log("DELETE CATEGORY:", id);
+    console.log("DELETE CATEGORY:", id); 
     setIsDeleteOpen(false);
   };
 

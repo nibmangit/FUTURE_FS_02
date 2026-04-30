@@ -1,6 +1,15 @@
-import { AlertCircle } from "lucide-react";
+import { useState } from "react";
+import { AlertCircle, Loader2 } from "lucide-react";
 
 export default function DeleteConfirmModal({ isOpen, onClose, onConfirm, product }) {
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleAction = async () => {
+    setIsDeleting(true);
+    await onConfirm(product?.id);
+    setIsDeleting(false);
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -19,9 +28,20 @@ export default function DeleteConfirmModal({ isOpen, onClose, onConfirm, product
           <button onClick={onClose} className="flex-1 px-4 py-3 bg-slate-800 cursor-pointer hover:bg-slate-700 text-white rounded-xl font-bold transition-all">
             Keep it
           </button>
-          <button onClick={() => onConfirm(product?.id)} className="flex-1 px-4 py-3 bg-red-600 cursor-pointer hover:bg-red-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-red-600/20">
-            Delete Now
-          </button>
+          <button 
+              onClick={handleAction} 
+              disabled={isDeleting}
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-red-600 cursor-pointer hover:bg-red-500 disabled:bg-red-800 disabled:cursor-not-allowed text-white rounded-xl font-bold transition-all shadow-lg shadow-red-600/20"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 size={18} className="animate-spin" />
+                  <span>Deleting...</span>
+                </>
+              ) : (
+                "Delete Now"
+              )}
+            </button>
         </div>
       </div>
     </div>

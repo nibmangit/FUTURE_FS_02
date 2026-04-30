@@ -12,17 +12,11 @@ class AdminCategorySerializer(serializers.ModelSerializer):
 class AdminProductSerializer(serializers.ModelSerializer):
     category = AdminCategorySerializer(read_only=True)
     category_id = serializers.UUIDField(write_only=True)
-    image = serializers.SerializerMethodField()
+    image = serializers.ImageField(required=False, allow_null=True)
 
     class Meta:
         model = Product
         fields = ["id", "title", "description", "category", "category_id", "price", "stock", "image", "created_at", ]
- 
-    # READ IMAGE 
-    def get_image(self, obj):
-        if obj.image:
-            return obj.image.url
-        return None
  
     # VALIDATION 
     def validate_stock(self, value):
@@ -33,13 +27,10 @@ class AdminProductSerializer(serializers.ModelSerializer):
     # CREATE PRODUCT 
     def create(self, validated_data):
         category_id = validated_data.pop("category_id")
-        category = Category.objects.get(id=category_id)
-
-        image = self.context["request"].FILES.get("image")
+        category = Category.objects.get(id=category_id) 
 
         product = Product.objects.create(
-            category=category,
-            image=image,
+            category=category, 
             **validated_data
         )
 
@@ -53,7 +44,7 @@ class AdminProductSerializer(serializers.ModelSerializer):
         if category_id:
             instance.category = Category.objects.get(id=category_id)
 
-        new_image = self.context["request"].FILES.get("image")
+        new_image = validated_data.get("image")
 
         # delete old image if new one is uploaded
         if new_image and instance.image:

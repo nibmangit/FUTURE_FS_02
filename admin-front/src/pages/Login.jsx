@@ -6,20 +6,24 @@ import toast from "react-hot-toast";
 
 export default function Login() {
   const navigate = useNavigate()
-  const { login, loading } = useAuth();
+  const { login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false); 
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
+      setIsLoggingIn(true);
       await login(email, password);
       toast.success("Access Granted");
       navigate("/dashboard");
-    } catch (err) {
+    } catch{
       toast.error("Invalid Admin Credentials");
+    }finally{
+      setIsLoggingIn(false);
     }
   };
 
@@ -74,6 +78,7 @@ export default function Login() {
                 <input 
                   type={showPassword ? "text" : "password"} 
                   placeholder="••••••••"
+                  value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full bg-slate-900/50 border border-slate-800 rounded-2xl py-3.5 pl-12 pr-12 text-white placeholder:text-slate-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all"
                   required
@@ -88,18 +93,22 @@ export default function Login() {
               </div>
             </div>
 
-            {/* Login Button */}
             <button 
               type="submit"
-              disabled={loading}
-              className="w-full group mt-4 cursor-pointer relative overflow-hidden rounded-2xl bg-blue-600 p-4 font-black text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-500 active:scale-[0.98] disabled:opacity-70"
-            >
+              disabled={isLoggingIn}
+              className="w-full group mt-4 cursor-pointer relative overflow-hidden rounded-2xl bg-blue-600 p-4 font-black text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-500 active:scale-[0.98] disabled:opacity-70 disabled:cursor-wait"
+            > 
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] pointer-events-none" />
+
               <div className="relative z-10 flex items-center justify-center gap-2">
-                {loading ? (
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                {isLoggingIn ? (
+                  <> 
+                    <div className="w-5 h-5 border-3 border-white/20 border-t-white rounded-full animate-spin" />
+                    <span className="tracking-widest opacity-80">VERIFYING...</span>
+                  </>
                 ) : (
                   <>
-                    <span>AUTHENTICATE</span>
+                    <span className="tracking-wider">AUTHENTICATE</span>
                     <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
                   </>
                 )}

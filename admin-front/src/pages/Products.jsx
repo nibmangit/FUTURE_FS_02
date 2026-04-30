@@ -1,30 +1,49 @@
-import { useState, useEffect } from "react";
-import { Plus } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import productService from "../api/productService";
+
 import ProductTable from "../components/products/ProductTable";
 import ProductFormModal from "../components/products/ProductFormModal";
 import DeleteConfirmModal from "../components/products/DeleteConfirmModal";
 import TableSkeleton from "../components/common/TableSkeleton";
 import ProductDetailDrawer from "../components/products/ProductDetailDrawer";
+import toast from "react-hot-toast";
  
 function Products() {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const itemsPerPage = 20;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  useEffect(() => {
-    setTimeout(() => {
-      setProducts([
-        { id: "1", title: "Apple AirPods Max Silver","description": "The Samsung Galaxy S8 is a premium smartphone with an Infinity Display, offering a stunning visual experience. It boasts advanced camera capabilities and cutting-edge technology.", category: { id: 1, name: "Electronics" }, price: "1200.00", stock: 4, image: "https://via.placeholder.com/50", created_at: "2026-04-20" },
-        { id: "2", title: "Samsung Galaxy S7", category: { id: 2, name: "Phones" }, price: "800.00", stock: 0, image: "https://via.placeholder.com/50", created_at: "2026-04-18" },
-        { id: "3", title: "HP Pro Book 440", category: { id: 2, name: "Laptops" }, price: "61000.00", stock: 3, image: "https://via.placeholder.com/50", created_at: "2026-04-18" },
-      ]);
+  const fetchProducts = useCallback(async (page) => {
+    try {
+      setLoading(true);
+      const data = await productService.getProducts(page);
+      setProducts(data.results); 
+      setTotalProducts(data.count);
+    } catch {
+      toast.error("Failed to load inventory");
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   }, []);
+
+  useEffect(() => { 
+
+    const loadData = async () => {
+      setLoading(true); 
+      await fetchProducts(currentPage);
+    };
+
+    loadData(); 
+  }, [currentPage, fetchProducts]);
 
   const handleAdd = () => {
     setSelectedProduct(null);
@@ -41,15 +60,32 @@ function Products() {
     setIsDeleteOpen(true);
   };
 
-  const handleDeleteConfirm = (id) => {
-    console.log("DELETE PRODUCT ID:", id);
+  const handleDeleteConfirm = async (id) => {
+    try {
+      await productService.deleteProduct(id);
+      toast.success("Product removed");
+      if (products.length === 1 && currentPage > 1) {
+      setCurrentPage(prev => prev - 1);
+    } else {
+      fetchProducts(currentPage);
+    }
+    } catch(err) {
+     if (err.response?.status === 500) {
+       toast.error("Cannot delete: This product is linked to existing orders.");
+    } else {
+       toast.error("Delete failed.");
+    }
+  } finally {
     setIsDeleteOpen(false);
+  }
   };
 
   const handleView = (product) => {
     setSelectedProduct(product);
     setIsDetailOpen(true);
   };
+
+  const totalPages = Math.ceil(totalProducts / itemsPerPage);
 
   return (
     <div className="space-y-8 pb-10">
@@ -71,12 +107,37 @@ function Products() {
       {loading ? (
         <TableSkeleton rows={5} />
       ) : (
-        <ProductTable
-          data={products}
-          onView={handleView}
-          onEdit={handleEdit }
-          onDelete={handleDeleteClick}
-        />
+        <>
+          <ProductTable
+            data={products}
+            onView={handleView}
+            onEdit={handleEdit}
+            onDelete={handleDeleteClick}
+          />
+
+          {/* Pagination Controls */}
+          <div className="flex items-center justify-between bg-slate-900/40 backdrop-blur-md border border-slate-800/50 p-4 rounded-2xl mt-4">
+            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+              Showing Page {currentPage} of {totalPages || 1}
+            </p>
+            <div className="flex gap-2">
+              <button 
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(prev => prev - 1)}
+                className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+              >
+                <ChevronLeft size={20} />
+              </button>
+              <button 
+                disabled={currentPage >= totalPages}
+                onClick={() => setCurrentPage(prev => prev + 1)}
+                className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
+              >
+                <ChevronRight size={20} />
+              </button>
+            </div>
+          </div>
+        </>
       )}
 
       <ProductDetailDrawer
@@ -86,7 +147,7 @@ function Products() {
         onEdit={handleEdit}
       />
 
-      <ProductFormModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} product={selectedProduct} />
+      <ProductFormModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} product={selectedProduct} onSuccess={() => fetchProducts(currentPage)} />
       <DeleteConfirmModal isOpen={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} product={selectedProduct} onConfirm={handleDeleteConfirm} />
     </div>
   );

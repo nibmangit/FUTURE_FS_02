@@ -1,13 +1,41 @@
 import { useState, useEffect } from "react";
+import categoryService from "../../api/categoryService";
+import toast from "react-hot-toast";
+import { Loader2 } from "lucide-react";
 
-export default function CategoryFormModal({ isOpen, onClose, category }) {
+export default function CategoryFormModal({ isOpen, onClose, category, onSuccess }) {
   const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       setName(category ? category.name : "");
     }
   }, [category, isOpen]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!name.trim()) return toast.error("Name is required");
+
+    setLoading(true);
+    try {
+      if (category) {
+        // UPDATE
+        await categoryService.updateCategory(category.id, { name });
+        toast.success("Category updated");
+      } else {
+        // CREATE
+        await categoryService.createCategory({ name });
+        toast.success("Category created");
+      }
+      onSuccess(); 
+      onClose();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Operation failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -16,7 +44,9 @@ export default function CategoryFormModal({ isOpen, onClose, category }) {
 
   return (
     <div className="fixed inset-0 bg-[#020617]/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-[#0f172a] w-full max-w-md p-8 rounded-3xl border border-slate-800 shadow-2xl relative overflow-hidden">
+      <form 
+        onSubmit={handleSubmit}
+        className="bg-[#0f172a] w-full max-w-md p-8 rounded-3xl border border-slate-800 shadow-2xl relative overflow-hidden">
         <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-600/10 blur-3xl rounded-full" />
         
         <h2 className="text-2xl font-black text-white mb-6">
@@ -47,11 +77,22 @@ export default function CategoryFormModal({ isOpen, onClose, category }) {
           <button onClick={onClose} className="px-6 py-2.5 text-slate-400 font-bold cursor-pointer hover:text-white transition-colors">
             Cancel
           </button>
-          <button className="px-8 py-2.5 bg-blue-600 cursor-pointer hover:bg-blue-500 text-white rounded-xl font-bold shadow-lg shadow-blue-600/20 transition-all active:scale-95">
-            {category ? "Update" : "Create"}
+          <button 
+            type="submit"
+            disabled={loading}
+            className="flex items-center justify-center gap-2 px-8 py-2.5 bg-blue-600 cursor-pointer hover:bg-blue-500 text-white rounded-xl font-bold shadow-lg shadow-blue-600/20 transition-all active:scale-95 disabled:opacity-70 min-w-[120px]"
+          >
+            {loading ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                <span>PROCESSING...</span>
+              </>
+            ) : (
+              category ? "Update" : "Create"
+            )}
           </button>
-        </div>
-      </div>
+        </div> 
+      </form>
     </div>
   );
 }

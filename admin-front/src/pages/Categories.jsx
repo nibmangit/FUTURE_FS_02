@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
 import { FolderPlus } from "lucide-react";
+import categoryService from "../api/categoryService";
+
 import CategoryTable from "../components/categories/CategoryTable";
 import CategoryFormModal from "../components/categories/CategoryFormModal";
 import DeleteCategoryModal from "../components/categories/DeleteCategoryModal";
 import TableSkeleton from "../components/common/TableSkeleton";
 import EmptyState from "../components/common/EmptyState"; 
+import toast from "react-hot-toast";
 
 function Categories() {
   const [loading, setLoading] = useState(true);
@@ -13,23 +16,21 @@ function Categories() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   
-  useEffect(() => {
-    const fetchCategories = async () => {
-      setLoading(true);
-      // Simulate network delay
-      setTimeout(() => {
-        const data = [
-          { id: "1", name: "Smart Watches", slug: "smart-watches" },
-          { id: "2", name: "Phones", slug: "phones" },
-          { id: "3", name: "Laptops", slug: "laptops" },
-        ];
-        // Toggle this to [] to test the EmptyState
-        setCategories(data); 
-        setLoading(false);
-      }, 1200);
-    };
-    fetchCategories();
-  }, []);
+  const fetchCategories = async () => {
+  try {
+    setLoading(true);
+    const data = await categoryService.getAllCategories(); 
+    setCategories(Array.isArray(data) ? data : data.results || []);
+  } catch {
+    toast.error("Failed to load categories.");
+  } finally {
+    setLoading(false);
+  }
+};
+ 
+useEffect(() => {
+  fetchCategories();
+}, []);
 
   const handleAdd = () => {
     setSelectedCategory(null);
@@ -45,10 +46,20 @@ function Categories() {
     setSelectedCategory(cat);
     setIsDeleteOpen(true);
   };
+  const handleSuccess = () => {
+  fetchCategories(); 
+};
 
-  const handleDeleteConfirm = (id) => {
-    console.log("DELETE CATEGORY:", id); 
-    setIsDeleteOpen(false);
+  const handleDeleteConfirm = async(id) => {
+    try{
+      await categoryService.deleteCategory(id)
+      toast.success("Category deleted successfully.");
+
+      const updateData = await categoryService.getAllCategories();
+      setCategories(updateData);
+    }catch{
+      toast.error("Could not delete category. It may be linked to products.")
+    }
   };
 
   return (
@@ -85,7 +96,7 @@ function Categories() {
       )}
 
       {/* Modals */}
-      <CategoryFormModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} category={selectedCategory} /> 
+      <CategoryFormModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} category={selectedCategory} onSuccess={handleSuccess} /> 
       <DeleteCategoryModal isOpen={isDeleteOpen} onClose={() => setIsDeleteOpen(false)} category={selectedCategory} onConfirm={handleDeleteConfirm} />
     </div>
   );

@@ -1,7 +1,20 @@
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
+import { useState } from "react";
 
 export default function DeleteCategoryModal({ isOpen, onClose, onConfirm, category }) {
+
+  const [isDeleting, setIsDeleting] = useState(false);
   if (!isOpen) return null;
+
+  const handleConfirm = async () => {
+    setIsDeleting(true);
+    try {
+      await onConfirm(category.id);
+      onClose()
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-60 p-4">
@@ -19,8 +32,19 @@ export default function DeleteCategoryModal({ isOpen, onClose, onConfirm, catego
           <button onClick={onClose} className="flex-1 px-4 py-3 bg-slate-800 cursor-pointer hover:bg-slate-700 text-white rounded-xl font-bold transition-all">
             Cancel
           </button>
-          <button onClick={() => onConfirm(category?.id)} className="flex-1 px-4 py-3 cursor-pointer bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-red-600/20">
-            Confirm Delete
+          <button 
+            onClick={handleConfirm} 
+            disabled={isDeleting}
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 cursor-pointer bg-red-600 hover:bg-red-500 disabled:bg-red-800 disabled:cursor-wait text-white rounded-xl font-bold transition-all shadow-lg shadow-red-600/20 active:scale-95"
+          >
+            {isDeleting ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                <span className="tracking-wider">Deleting...</span>
+              </>
+            ) : (
+              "Confirm Delete"
+            )}
           </button>
         </div>
       </div>

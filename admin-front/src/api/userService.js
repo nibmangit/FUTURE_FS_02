@@ -1,4 +1,4 @@
-import apiPrivate from "../../../frontend/src/api/axiosPrivate";
+import apiPrivate from "./axiosPrivate";
 import apiPublic from "./axiosPublic"
 
 export const loginUser = async (email, password) => {

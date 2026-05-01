@@ -1,8 +1,8 @@
 import apiPrivate from "./axiosPrivate";
 
 const productService = { 
-  getProducts: async ({page=1}) => {
-    const response = await apiPrivate.get(`/admin/products/?page=${page}`);
+  getProducts: async (params) => {
+    const response = await apiPrivate.get(`/admin/products/`, {params});
     return response.data;
   },
  

@@ -1,6 +1,8 @@
-from rest_framework import generics
+from rest_framework import generics, filters
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticated
-from cloudinary.uploader import destroy
+from cloudinary.uploader import destroy 
+from admin_panel.filters import AdminProductFilter
 
 from store.models import Product, Category
 from admin_panel.serializers.product_admin import AdminProductSerializer, AdminCategorySerializer
@@ -14,6 +16,11 @@ class AdminProductListCreateView(generics.ListCreateAPIView):
     queryset = Product.objects.all().order_by("-created_at")
     serializer_class = AdminProductSerializer
     permission_classes = [IsAuthenticated, IsAdminOrStaff]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter ]
+    filterset_class = AdminProductFilter
+    search_fields = ['title', 'description', 'category__name']
+    ordering_fields = ['stock', 'price', 'created_at']
+    ordering = ['-created_at']
 
 
 class AdminProductDetailView(generics.RetrieveUpdateDestroyAPIView):

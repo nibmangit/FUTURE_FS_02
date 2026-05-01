@@ -8,6 +8,7 @@ import DeleteConfirmModal from "../components/products/DeleteConfirmModal";
 import TableSkeleton from "../components/common/TableSkeleton";
 import ProductDetailDrawer from "../components/products/ProductDetailDrawer";
 import toast from "react-hot-toast";
+import ProductFilters from "../components/products/ProductFilters";
  
 function Products() {
   const [loading, setLoading] = useState(false);
@@ -17,15 +18,19 @@ function Products() {
   const [totalProducts, setTotalProducts] = useState(0);
   const itemsPerPage = 20;
 
+  const [activeFilters, setActiveFilters] = useState({});
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  const fetchProducts = useCallback(async (pageNumber) => {
+  const fetchProducts = useCallback(async (pageNumber, filters = {}) => {
     try {
       setLoading(true);
-      const data = await productService.getProducts({ page: pageNumber });
+      const data = await productService.getProducts({
+         page: pageNumber, ...filters
+        });
       setProducts(data.results); 
       setTotalProducts(data.count);
     } catch {
@@ -39,11 +44,16 @@ function Products() {
 
     const loadData = async () => {
       setLoading(true); 
-      await fetchProducts(currentPage);
+      await fetchProducts(currentPage, activeFilters);
     };
 
     loadData(); 
-  }, [currentPage, fetchProducts]);
+  }, [currentPage, fetchProducts, activeFilters]);
+
+  const handleFilterChange = (newFilters) => {
+    setActiveFilters(newFilters);
+    setCurrentPage(1);
+  };
 
   const handleAdd = () => {
     setSelectedProduct(null);
@@ -103,6 +113,8 @@ function Products() {
           Add Product
         </button>
       </div>
+
+      <ProductFilters onFilterChange={handleFilterChange} />
 
       {loading ? (
         <TableSkeleton rows={5} />

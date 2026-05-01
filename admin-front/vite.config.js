@@ -8,6 +8,12 @@ export default defineConfig({
     react(),
     tailwindcss(),
     ],
+  css: {
+    // Force Vite to use esbuild instead of lightningcss 
+    // to prevent the "@theme" and "@tailwind" crash
+    transformer: 'postcss', 
+    minify: 'esbuild',
+  },
   build: {
     // Vite 8 specific fix: This forces the build to use 
     // standard resolution if the native one fails.
@@ -18,9 +24,5 @@ export default defineConfig({
       },
     },
   },
-  // If the error persists, adding this can help bypass 
-  // strict package resolution errors in Vite 8
-  resolve: {
-    mainFields: ['module', 'main', 'jsnext:main', 'browser'],
-  }
+  chunkSizeWarningLimit: 1000,
 })

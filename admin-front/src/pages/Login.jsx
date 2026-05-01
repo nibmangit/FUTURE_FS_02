@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Lock, Mail, Eye, EyeOff, ShieldCheck, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -26,6 +26,13 @@ export default function Login() {
       setIsLoggingIn(false);
     }
   };
+
+  useEffect(() => { 
+    document.title = "Login | MiniTech Admin";
+    return () => {
+       document.title = "MiniTech Admin";
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#020617] flex items-center justify-center p-6 relative overflow-hidden">

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const HeaderContext = createContext();
 
@@ -8,6 +8,12 @@ export function HeaderProvider({ children }) {
     subtitle: "System Overview",
     action: null,
   });
+
+  useEffect(() => { 
+    if (!document.title.includes("Login")) {
+      document.title = `${headerData.title} | MiniTech Admin`;
+    }
+  }, [headerData.title]);
 
   const setHeader = (title, subtitle, action = null) => {
     setHeaderData({ title, subtitle, action });

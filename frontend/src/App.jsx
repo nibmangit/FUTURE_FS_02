@@ -15,6 +15,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import NotFound from "./pages/NotFound"; 
 import Footer from "./components/Footer";
 import LandingPage from "./pages/LandingPage";
+import { useEffect } from "react";
 
 function App() {
   const navigate = useNavigate();
@@ -26,6 +27,24 @@ function App() {
   const [confirmationId, setConfirmationId] = useState(null);
   
   const isLoggedIn = !!user;
+
+  useEffect(() => { 
+    const titleMap = {
+      "/": "Welcome to MiniTech",
+      "/products": "Browse Gadgets | MiniTech",
+      "/cart": "Your Shopping Cart",
+      "/checkout": "Secure Checkout",
+      "/confirmation": "Order Confirmed!",
+      "/authform": "Join MiniTech",
+      "/orderhistory": "My Orders",
+    };
+ 
+    if (location.pathname.startsWith('/product/')) {
+      document.title = "View Product | MiniTech";
+    } else { 
+      document.title = titleMap[location.pathname] || "MiniTech Gadgets";
+    }
+  }, [location.pathname]);
 
   const handleAddToCart = (product, quantity = 1) => {
     

@@ -35,10 +35,10 @@ class InitializePaymentView(APIView):
             "email": request.user.email,
             "first_name": address.full_name,
             "tx_ref": tx_ref,
-            "callback_url": "https://nonelucidating-jenna-postoperative.ngrok-free.dev/api/payments/webhook/",
-            "return_url": "http://localhost:5173/confirmation/", 
+            "callback_url": settings.CHAPA_CALLBACK_URL,
+            "return_url": settings.CHAPA_RETURN_URL, 
             "customization": {
-                "title": "Mini Store",
+                "title": settings.STORE_NAME,
                 "description": f"Order {order.id}"
             }
         }

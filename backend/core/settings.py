@@ -23,10 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure--%i(=(o$l5wijz1e=(fakps47(fk*w8$ta5y!0z3xv-gwi#^a*'
+SECRET_KEY = os.getenv('SECRET_KEY', 'developement-key-only-123')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True  
+DEBUG = os.getenv('DEBUG', 'True') == 'True' 
 
 # Application definition
 
@@ -60,18 +60,11 @@ MIDDLEWARE = [
 ]
 
 
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    "nonelucidating-jenna-postoperative.ngrok-free.dev",
-]
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://localhost:5174",
-]
-
+CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:5173,http://localhost:5174').split(',')
 CORS_ALLOW_CREDENTIALS = True
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost:5173,http://localhost:5174').split(',')
 
 CORS_ALLOW_HEADERS = [
     "authorization",
@@ -170,6 +163,9 @@ SIMPLE_JWT = {
 
 #Chapa integration  
 CHAPA_SECRET_KEY = os.getenv('CHAPA_SECRET_KEY')
+CHAPA_CALLBACK_URL = os.getenv("CHAPA_CALLBACK_URL")
+CHAPA_RETURN_URL = os.getenv("CHAPA_RETURN_URL")
+STORE_NAME = os.getenv("STORE_NAME", "Mini Store")
 
 
 # Cloudinary configuration

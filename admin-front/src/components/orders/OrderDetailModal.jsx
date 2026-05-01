@@ -112,7 +112,7 @@ export default function OrderDetailModal({ isOpen, onClose, order, onStatusUpdat
                 <div key={idx} className="flex gap-4 p-4 rounded-2xl bg-slate-900/30 border border-slate-800/50 group hover:border-slate-700 transition-colors">
                   <div className="w-16 h-16 rounded-xl bg-slate-800 overflow-hidden border border-slate-700">
                     <img
-                      src={`https://res.cloudinary.com/dahvdgqbf/image/upload/${item.product_image}`}
+                      src={`https://res.cloudinary.com/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload/${item.product_image}`}
                       className="w-full h-full object-cover"
                       alt=""
                     />

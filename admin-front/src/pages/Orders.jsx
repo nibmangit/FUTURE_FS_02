@@ -7,8 +7,10 @@ import TableSkeleton from "../components/common/TableSkeleton";
 import EmptyState from "../components/common/EmptyState";
 import toast from "react-hot-toast";
 import orderService from "../api/orderService";
+import { useHeader } from "../context/HeaderContext";
 
 function Orders() {
+  const {setHeader}=useHeader();
   const [loading, setLoading] = useState(true);
   const [orderList, setOrderList] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -41,6 +43,10 @@ function Orders() {
     fetchOrders();
   }, [fetchOrders]);
 
+  useEffect(() => {
+    setHeader("Orders","Track and fulfill customer purchases");
+  }, []);
+
   const handleFilterChange = (newFilters) => {
     setActiveFilters(newFilters);
     setCurrentPage(1);
@@ -54,11 +60,7 @@ function Orders() {
   const totalPages = Math.ceil(totalOrders / itemsPerPage);
 
   return (
-    <div className="space-y-8 pb-10">
-      <div>
-        <h1 className="text-3xl font-black text-white tracking-tight">Orders</h1>
-        <p className="text-slate-500 text-sm font-medium">Track and fulfill customer purchases</p>
-      </div>
+    <div className="space-y-4 pb-10"> 
 
       <OrderFilters onFilterChange={handleFilterChange} />
 

@@ -1,7 +1,8 @@
 import { NavLink } from "react-router-dom";
 import { 
   LayoutDashboard, Package, Layers, 
-  ShoppingCart, Users, ChevronLeft, ChevronRight 
+  ShoppingCart, Users, ChevronLeft, ChevronRight, 
+  ExternalLink
 } from "lucide-react";
 
 const links = [
@@ -33,16 +34,21 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
       {/* Brand Logo Area */}
       <div className="p-8 h-20 flex items-center overflow-hidden">
         <div className="flex items-center gap-3 min-w-[40px]">
-          <div className="w-9 h-9 bg-gradient-to-tr from-blue-700 to-blue-500 rounded-xl flex-shrink-0 flex items-center justify-center shadow-lg shadow-blue-600/20">
-            <div className="w-4 h-4 bg-white rounded-sm rotate-45" />
+          
+          <div className="w-10 h-10 bg-gradient-to-tr from-blue-700 to-blue-500 rounded-xl flex-shrink-0 flex items-center justify-center shadow-lg shadow-blue-600/20 overflow-hidden">
+            <img 
+              src="/image.png" // Replace with your actual path
+              alt="MiniTech Logo"
+              className="w-full h-full object-cover p-1.5" 
+            />
           </div>
+
           <span className={`text-2xl font-black tracking-tighter text-white transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0 invisible"}`}>
             MINI<span className="text-blue-500">TECH</span>
           </span>
         </div>
       </div>
-
-      {/* Navigation Links */}
+ 
       <nav className="flex-1 px-4 mt-4 space-y-1 overflow-y-auto no-scrollbar">
         {links.map((link) => (
           <NavLink
@@ -57,7 +63,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
               }`
             }
           >
-            <span className="flex-shrink-0 transition-transform duration-300 group-hover:scale-110">
+            <span className="shrink-0 transition-transform duration-300 group-hover:scale-110">
               {link.icon}
             </span>
             <span className={`font-semibold tracking-wide whitespace-nowrap transition-all duration-300 ${isOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 invisible w-0"}`}>
@@ -65,6 +71,23 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
             </span>
           </NavLink>
         ))}
+
+        <div className="pt-4 mt-4 border-t border-slate-800/40">
+          <a
+            href={import.meta.env.VITE_STORE_URL || "#"}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={!isOpen ? "Visit Store" : ""}
+            className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-500 hover:bg-blue-600/5 hover:text-blue-400"
+          >
+            <span className="shrink-0 transition-transform duration-300 group-hover:rotate-12">
+              <ExternalLink size={20} />
+            </span>
+            <span className={`font-bold text-[11px] uppercase tracking-widest whitespace-nowrap transition-all duration-300 ${isOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 invisible w-0"}`}>
+              Visit Store
+            </span>
+          </a>
+        </div>
       </nav>
 
       {/* Status Section */}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { FolderPlus } from "lucide-react";
+import { useHeader } from "../context/HeaderContext";
 import categoryService from "../api/categoryService";
 
 import CategoryTable from "../components/categories/CategoryTable";
@@ -10,6 +11,7 @@ import EmptyState from "../components/common/EmptyState";
 import toast from "react-hot-toast";
 
 function Categories() {
+  const { setHeader } = useHeader();
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,20 +19,34 @@ function Categories() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   
   const fetchCategories = async () => {
-  try {
-    setLoading(true);
-    const data = await categoryService.getAllCategories(); 
-    setCategories(Array.isArray(data) ? data : data.results || []);
-  } catch {
-    toast.error("Failed to load categories.");
-  } finally {
-    setLoading(false);
-  }
-};
- 
-useEffect(() => {
-  fetchCategories();
-}, []);
+    try {
+      setLoading(true);
+      const data = await categoryService.getAllCategories(); 
+      setCategories(Array.isArray(data) ? data : data.results || []);
+    } catch {
+      toast.error("Failed to load categories.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+      setHeader(
+        "Categories", 
+        "Organize your product catalog", 
+        <button 
+          onClick={handleAdd}
+          className="flex items-center gap-2 bg-blue-600 cursor-pointer hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-lg shadow-blue-600/20 active:scale-95"
+        >
+          <FolderPlus size={16} />
+          New Category
+        </button>
+      );
+    }, []);
 
   const handleAdd = () => {
     setSelectedCategory(null);
@@ -63,23 +79,8 @@ useEffect(() => {
   };
 
   return (
-    <div className="space-y-8 pb-10">
-      <div className="flex justify-between items-end">
-        <div>
-          <h1 className="text-3xl font-black text-white tracking-tight">Categories</h1>
-          <p className="text-slate-500 text-sm">Organize your product catalog</p>
-        </div>
-
-        <button 
-          onClick={handleAdd}
-          className="flex items-center gap-2 bg-blue-600 cursor-pointer hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20 active:scale-95"
-        >
-          <FolderPlus size={18} />
-          New Category
-        </button>
-      </div>
-
-      {/* --- STATE LOGIC --- */}
+    <div className="w-full space-y-4 pb-8"> 
+    
       {loading ? (
         <TableSkeleton rows={4} />
       ) : categories.length === 0 ? (

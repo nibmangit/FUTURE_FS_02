@@ -9,8 +9,10 @@ import TopProducts from "../components/dashboard/TopProducts";
 import LowStock from "../components/dashboard/LowStock";
 import TableSkeleton from "../components/common/TableSkeleton";
 import toast from "react-hot-toast";
+import { useHeader } from "../context/HeaderContext";
  
 function Dashboard() {
+  const {setHeader} = useHeader();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -29,13 +31,14 @@ function Dashboard() {
     fetchStats();
   }, []);
 
+  useEffect(() => { 
+    setHeader("Dashboard", "Admin Overview and Analytics");
+  }, []);
+
   if (loading) return <TableSkeleton />;
 
 return (
-    <div className="space-y-8 pb-12">
-      <header>
-        <h1 className="text-3xl font-black tracking-tight text-white">Dashboard Overview</h1> 
-      </header>
+    <div className="space-y-8 pb-12"> 
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

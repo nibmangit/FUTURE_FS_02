@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import productService from "../api/productService";
+import { useHeader } from "../context/HeaderContext";
 
 import ProductTable from "../components/products/ProductTable";
 import ProductFormModal from "../components/products/ProductFormModal";
@@ -11,6 +12,7 @@ import toast from "react-hot-toast";
 import ProductFilters from "../components/products/ProductFilters";
  
 function Products() {
+  const {setHeader}= useHeader()
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
 
@@ -49,6 +51,20 @@ function Products() {
 
     loadData(); 
   }, [currentPage, fetchProducts, activeFilters]);
+
+  useEffect(() => {
+      setHeader(
+        "Products", 
+        "Manage your inventory and pricing", 
+        <button 
+          onClick={handleAdd}
+          className="flex items-center gap-2 bg-blue-600 cursor-pointer hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-lg shadow-blue-600/20 active:scale-95"
+        >
+          <Plus size={18} />
+          Add Product
+        </button>
+      );
+    }, []);
 
   const handleFilterChange = (newFilters) => {
     setActiveFilters(newFilters);
@@ -98,21 +114,7 @@ function Products() {
   const totalPages = Math.ceil(totalProducts / itemsPerPage);
 
   return (
-    <div className="space-y-8 pb-10">
-      <div className="flex justify-between items-end">
-        <div>
-          <h1 className="text-3xl font-black text-white tracking-tight">Products</h1>
-          <p className="text-slate-500 text-sm">Manage your inventory and pricing</p>
-        </div>
-
-        <button 
-          onClick={handleAdd}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20 cursor-pointer"
-        >
-          <Plus size={18} />
-          Add Product
-        </button>
-      </div>
+    <div className="space-y-8 pb-10"> 
 
       <ProductFilters onFilterChange={handleFilterChange} />
 

@@ -6,12 +6,17 @@ import TableSkeleton from "../components/common/TableSkeleton";
 import EmptyState from "../components/common/EmptyState";
 import toast from "react-hot-toast";
 import { userService } from "../api/userService";
+import UserFilters from "../components/users/UserFilters";
+import { useHeader } from "../context/HeaderContext";
 
 export default function Users() {
+  const { setHeader } = useHeader();
   const [selectedUser, setSelectedUser] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [userList, setUserList] = useState([]);
+
+  const [filters, setFilters] = useState({});
 
   const [userStats, setUserStats] = useState({
     total: 0,
@@ -27,7 +32,7 @@ export default function Users() {
   const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await userService.getUsers({ page: currentPage });
+      const data = await userService.getUsers({ page: currentPage , ...filters});
       setUserList(data.results || []);
       setTotalUsers(data.count || 0);
 
@@ -44,30 +49,34 @@ export default function Users() {
     } finally {
       setLoading(false);
     }
-  }, [currentPage]);
+  }, [currentPage, filters]);
 
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
 
+  useEffect(() => { 
+    setHeader("User Management", "Monitor accounts and assign permissions");
+  }, []);
+
+  const handleFilterChange = (newFilters) => {
+    setFilters(newFilters);
+    setCurrentPage(1); 
+  };
+
   const totalPages = Math.ceil(totalUsers / itemsPerPage);
 
   return (
-    <div className="space-y-8 pb-10">
-      <div className="flex justify-between items-end">
-        <div>
-          <h1 className="text-3xl font-black text-white tracking-tight">User Management</h1>
-          <p className="text-slate-500 text-sm">Monitor accounts and assign permissions</p>
-        </div>
-      </div>
+    <div className="space-y-4 pb-10">  
 
-      {/* Mini Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
         <StatCard icon={<UsersIcon size={20}/>} label="Total Users" value={userStats.total} color="text-blue-500" />
         <StatCard icon={<ShieldCheck size={20}/>} label="Active" value={userStats.active} color="text-emerald-500" />
         <StatCard icon={<ShieldCheck size={20}/>} label="Admins" value={userStats.admins} color="text-purple-500" />
         <StatCard icon={<UserMinus size={20}/>} label="Blocked" value={userStats.blocked} color="text-red-500" />
       </div>
+
+      <UserFilters onFilterChange={handleFilterChange} />
 
       {loading ? (
         <TableSkeleton rows={5} />

@@ -1,1 +1,29 @@
 @import "tailwindcss";
+
+/* Custom Scrollbar for the whole App */
+@layer base {
+  ::-webkit-scrollbar {
+    width: 8px; /* Thickness of the vertical scrollbar */
+    height: 8px; /* Thickness of the horizontal scrollbar */
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #020617; /* Matches your background color */
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #1e293b; /* Slate-800 color */
+    border-radius: 10px;
+    border: 2px solid #020617; /* Creates "padding" around the thumb */
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3b82f6; /* Blue-500 color on hover */
+  }
+
+  /* For Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #1e293b #020617;
+  }
+}

@@ -9,8 +9,7 @@ export const useCategories = () => {
     const fetchCategories = async () => {
       try {
         const res = await productService.getCategories();
-        setCategories(res);
-        console.log(res)
+        setCategories(res); 
       } catch (err) {
         console.error("Failed to fetch categories", err);
       } finally {

@@ -40,7 +40,7 @@ apiPrivate.interceptors.response.use(
           window.location.href = "/authform";
           return Promise.reject(error);
         }
-        const response = await axios.post("http://127.0.0.1:8000/api/users/refresh/", {
+        const response = await axios.post(`${BASE_URL}/users/refresh/`, {
           refresh: refreshToken,
         });
 

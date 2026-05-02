@@ -37,8 +37,7 @@ export default function ProductFormModal({ isOpen, onClose, product, onSuccess }
   }, [product, isOpen]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("File in state:", form.image);
+    e.preventDefault(); 
 
     if (!form.category_id || !form.title || !form.description || !form.price || !form.stock) {
       return toast.error("Please Please fill all fields");
@@ -56,11 +55,7 @@ export default function ProductFormModal({ isOpen, onClose, product, onSuccess }
     // Only append image if the user actually selected a new file
     if (form.image) {
       formData.append("image", form.image);
-    }
-
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
-    }
+    } 
 
     try {
       if (product) {

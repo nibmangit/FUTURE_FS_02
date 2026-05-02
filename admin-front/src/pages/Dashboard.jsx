@@ -19,8 +19,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await getDashboardStats();
-        console.log(res.data);
+        const res = await getDashboardStats(); 
         setData(res.data);
       } catch {
         toast.error("Failed to sync dashboard data.");

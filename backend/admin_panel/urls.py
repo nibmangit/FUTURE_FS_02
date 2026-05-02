@@ -8,7 +8,7 @@ from .views.dashboard import (
     AdminDashboardView
 )
 from .views.user import (
-    AdminUserListView, AdminUserDetailView
+    AdminUserListView, AdminUserDetailView, AdminTokenObtainPairView
 )
 
 urlpatterns = [
@@ -30,4 +30,5 @@ urlpatterns = [
     #user
     path("users/", AdminUserListView.as_view(), name="admin-users"),
     path("users/<uuid:pk>/", AdminUserDetailView.as_view(), name="admin-user-detail"),
+    path("admin-login/", AdminTokenObtainPairView.as_view(), name="admin_token_obtain_pair"),
 ]

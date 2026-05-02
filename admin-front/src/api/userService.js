@@ -2,7 +2,7 @@ import apiPrivate from "./axiosPrivate";
 import apiPublic from "./axiosPublic"
 
 export const loginUser = async (email, password) => {
-  return apiPublic.post("/users/login/", {  email, password,});
+  return apiPublic.post("/admin/admin-login/", {  email, password,});
 };
 
 export const getCurrentUser = async () => {

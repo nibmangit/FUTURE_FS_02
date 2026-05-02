@@ -3,6 +3,25 @@ from users.models import User
 from orders.models import Order
 from django.db.models import Sum
 
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework.exceptions import PermissionDenied
+
+class AdminTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        # First, verify that the email/password are correct
+        data = super().validate(attrs)
+        
+        # 'self.user' is the user object found after email/password check
+        # We check if their role is strictly 'admin'
+        if self.user.role != 'admin':
+            raise PermissionDenied("Access denied: You do not have an admin role.")
+            
+        # Optional: Add the role to the response so the frontend knows for sure
+        data['role'] = self.user.role
+        data['username'] = self.user.username
+        
+        return data
+
 class AdminUserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

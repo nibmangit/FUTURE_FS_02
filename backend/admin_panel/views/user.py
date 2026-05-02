@@ -8,6 +8,12 @@ from admin_panel.permissions import IsAdminOrStaff
 from admin_panel.serializers.user_admin import *
 from admin_panel.filters import AdminUserFilter
 
+from rest_framework_simplejwt.views import TokenObtainPairView
+from admin_panel.serializers.user_admin import AdminTokenObtainPairSerializer
+
+class AdminTokenObtainPairView(TokenObtainPairView):
+    serializer_class = AdminTokenObtainPairSerializer
+
 class AdminUserListView(generics.ListAPIView):
     queryset = User.objects.all().order_by("-date_joined")
     serializer_class = AdminUserListSerializer

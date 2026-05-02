@@ -20,8 +20,8 @@ export default function Login() {
       await login(email, password);
       toast.success("Access Granted");
       navigate("/dashboard");
-    } catch{
-      toast.error("Invalid Admin Credentials");
+    } catch(err){
+      toast.error(err.response?.data?.detail || "Invalid Admin Credentials");
     }finally{
       setIsLoggingIn(false);
     }
